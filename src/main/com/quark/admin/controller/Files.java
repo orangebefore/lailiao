@@ -42,8 +42,14 @@ public class Files extends Controller{
 	        }  
 		 renderFile(new File(fullPath)); 
 	}
-	
-	 /*** 
+	public void video() {
+		String name = getPara("name");
+		String fullPath = config.videos_path + name;
+		renderFile(new File(fullPath));
+	}
+
+
+	/***
      * 功能 :调整图片大小 
      * @param srcImgPath 原图片路径 
      * @param distImgPath  转换大小后图片路径 

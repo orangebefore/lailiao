@@ -83,6 +83,9 @@ public class config extends JFinalConfig {
 	public static final String pay_notify_host = "120.24.16.244";
 	public static final String controllers = "com.quark.app.controller";
 
+	//public static final String videos_path = "c:/videos/";
+	public static final String videos_path = "C:/videos/";
+
 	//public static final String images_path = "c:/images/";
 	public static final String images_path = "C:/images/";
 	public static final String ueditor_images_path = "C:/images/ueditor/";

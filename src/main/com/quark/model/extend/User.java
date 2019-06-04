@@ -108,6 +108,10 @@ public class User extends Model<User>{
     
     public static final String is_car="columnName=is_car,remarks=汽车认证,dataType=int,defaultValue=0";
 
+    public static final String is_card="columnName=is_card,remarks=身份认证状态,dataType=String,defaultValue=no";
+
+    public static final String is_video="columnName=is_video,remarks=视频认证状态,dataType=String,defaultValue=no";
+
 		
 	
 }
