@@ -123,7 +123,7 @@
 												<tr>
 						                                <th>审核状态</th>
 														<th>
-															<select name="car_status">
+															<select id="car_status_select" name="car_status">
 																<option id="car_status_2" onclick="checkOk()"  value="2">待审核</option>
 											                    <option id="car_status_1" onclick="checkOk()"  value="1">已通过</option>
 											                    <option id="car_status_0" onclick="checkOk()"  value="0">未通过</option>
@@ -138,6 +138,12 @@
 												</table>
 												</form>
 												<script type="text/javascript">
+													$("#car_status_select").change(function(){
+														var val = $(this).val();
+														if(val == "2" || val == "1"||val == "0"){
+															checkOk();
+														}
+													})
 													function checkOk(){
 														$("#form").attr("action","/admin/CarReview/list");	
 														document.form.submit();

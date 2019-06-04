@@ -63,8 +63,8 @@
 				<!-- .nav-list -->
 				<script type="text/javascript">
 					$(document).ready(function() {
-						$('#8').addClass("active open");
-						$('#83').addClass("open");
+						$('#9').addClass("active open");
+						$('#93').addClass("open");
 					});
 				</script>
 				<#include "left_common.html">
@@ -127,7 +127,7 @@
 												<tr>
 						                                <th>审核状态</th>
 														<th>
-															<select name="id_card_status">
+															<select id="id_status_select" name="id_card_status">
 																<option id="id_card_status_2" onclick="checkOk()"  value="2">待审核</option>
 											                    <option id="id_card_status_1" onclick="checkOk()"  value="1">已通过</option>
 											                    <option id="id_card_status_0" onclick="checkOk()"  value="0">未通过</option>
@@ -142,6 +142,12 @@
 												</table>
 												</form>
 												<script type="text/javascript">
+													$("#id_status_select").change(function(){
+														var val = $(this).val();
+														if(val == "2" || val == "1"||val == "0"){
+															checkOk();
+														}
+													})
 													function checkOk(){
 														$("#form").attr("action","/admin/IdCards/list");	
 														document.form.submit();

@@ -132,10 +132,10 @@
 												<tr>
 					                                <th>审核状态</th>
 													<th>
-														<select name="house_status">
-															<option id="house_status_2" onclick="checkOk()"  value="2">待审核</option>
-										                    <option id="house_status_1" onclick="checkOk()"  value="1">已通过</option>
-										                    <option id="house_status_0" onclick="checkOk()"  value="0">未通过</option>
+														<select id="house_status_select" name="house_status">
+															<option id="house_status_2"   value="2">待审核</option>
+										                    <option id="house_status_1"   value="1">已通过</option>
+										                    <option id="house_status_0"   value="0">未通过</option>
 														</select>
 														<script type="text/javascript">
 															$("#house_status_${house_status}").prop("selected",true);
@@ -147,10 +147,16 @@
 											</table>
 											</form>
 											<script type="text/javascript">
+												$("#house_status_select").change(function(){
+													var val = $(this).val();
+													if(val == "2" || val == "1"||val == "0"){
+														checkOk();
+													}
+												})
 												function checkOk(){
 													$("#form").attr("action","/admin/HouseAudit/list");	
 													document.form.submit();
-												} 
+												}
 										    </script>
 										<div class="table-responsive">
 											<table id="sample-table-1" class="table table-striped table-bordered table-hover">

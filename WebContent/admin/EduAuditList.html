@@ -132,7 +132,7 @@
 												<tr>
 					                                <th>审核状态</th>
 													<th>
-														<select name="edu_status">
+														<select id="edu_status_select" name="edu_status">
 															<option id="edu_status_2" onclick="checkOk()"  value="2">待审核</option>
 										                    <option id="edu_status_1" onclick="checkOk()"  value="1">已通过</option>
 										                    <option id="edu_status_0" onclick="checkOk()"  value="0">未通过</option>
@@ -147,6 +147,12 @@
 											</table>
 											</form>
 											<script type="text/javascript">
+												$("#edu_status_select").change(function(){
+													var val = $(this).val();
+													if(val == "2" || val == "1"||val == "0"){
+														checkOk();
+													}
+												})
 												function checkOk(){
 													$("#form").attr("action","/admin/EduAudit/list");	
 													document.form.submit();
