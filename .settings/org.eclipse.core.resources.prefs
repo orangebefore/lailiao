@@ -1,14 +1,10 @@
 eclipse.preferences.version=1
 encoding//WebContent/admin/AdminUserList.html=UTF-8
-encoding//WebContent/admin/ChargesList.html=UTF-8
-encoding//WebContent/admin/IdCardList.html=UTF-8
-encoding//WebContent/admin/JobsList.html=UTF-8
 encoding//WebContent/admin/MenUserInfo.html=UTF-8
 encoding//WebContent/admin/MenUserList.html=UTF-8
 encoding//WebContent/admin/ReportList.html=UTF-8
 encoding//WebContent/admin/UserInfo.html=UTF-8
 encoding//WebContent/admin/UserList.html=UTF-8
-encoding//WebContent/admin/left_common.html=UTF-8
 encoding//WebContent/common/_paginate.html=UTF-8
 encoding/<project>=UTF-8
 encoding/WebContent=UTF-8
