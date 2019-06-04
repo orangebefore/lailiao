@@ -1,0 +1,141 @@
+﻿body {
+  margin:0px;
+  background-image:none;
+  position:static;
+  left:auto;
+  width:620px;
+  margin-left:0;
+  margin-right:0;
+  text-align:left;
+}
+#base {
+  position:absolute;
+  z-index:0;
+}
+#u0 {
+  position:absolute;
+  left:0px;
+  top:0px;
+  width:410px;
+  height:836px;
+}
+#u0_img {
+  position:absolute;
+  left:0px;
+  top:0px;
+  width:410px;
+  height:836px;
+}
+#u1 {
+  position:absolute;
+  left:2px;
+  top:410px;
+  width:406px;
+  visibility:hidden;
+  word-wrap:break-word;
+}
+#u2 {
+  position:absolute;
+  left:40px;
+  top:113px;
+  width:334px;
+  height:593px;
+}
+#u2_img {
+  position:absolute;
+  left:0px;
+  top:0px;
+  width:334px;
+  height:593px;
+}
+#u3 {
+  position:absolute;
+  left:2px;
+  top:288px;
+  width:330px;
+  visibility:hidden;
+  word-wrap:break-word;
+}
+#u4 {
+  position:absolute;
+  left:210px;
+  top:190px;
+  width:150px;
+  height:50px;
+}
+#u4_img {
+  position:absolute;
+  left:0px;
+  top:0px;
+  width:150px;
+  height:50px;
+}
+#u5 {
+  position:absolute;
+  left:2px;
+  top:17px;
+  width:146px;
+  visibility:hidden;
+  word-wrap:break-word;
+}
+#u6 {
+  position:absolute;
+  left:270px;
+  top:300px;
+  width:90px;
+  height:330px;
+  overflow:hidden;
+  background-image:url('../../resources/images/transparent.gif');
+}
+#u7 {
+  position:absolute;
+  left:40px;
+  top:140px;
+  width:50px;
+  height:50px;
+  overflow:hidden;
+  background-image:url('../../resources/images/transparent.gif');
+}
+#u8 {
+  position:absolute;
+  left:280px;
+  top:150px;
+  width:80px;
+  height:20px;
+}
+#u8_img {
+  position:absolute;
+  left:0px;
+  top:0px;
+  width:80px;
+  height:20px;
+}
+#u9 {
+  position:absolute;
+  left:2px;
+  top:2px;
+  width:76px;
+  visibility:hidden;
+  word-wrap:break-word;
+}
+#u10 {
+  position:absolute;
+  left:420px;
+  top:414px;
+  width:200px;
+  height:16px;
+}
+#u10_img {
+  position:absolute;
+  left:0px;
+  top:0px;
+  width:200px;
+  height:16px;
+}
+#u11 {
+  position:absolute;
+  left:0px;
+  top:0px;
+  width:200px;
+  word-wrap:break-word;
+}

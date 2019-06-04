@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html class="" ng-class="{'off-top':!navbar.top,'off-bottom':!navbar.bottom}" xmlns:wb="http://open.weibo.com/wb">
+
+<head>
+    <meta charset="utf-8" />
+    <title>{{"UE lives"|translate}}</title>
+    <!-- <base href="/"> -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="viewport" content="user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimal-ui" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="yes" />
+    <link rel="stylesheet" href="css/app.min.css" />
+    <script src="//cdn.bootcss.com/jquery/2.1.4/jquery.min.js"></script>
+    <script src="//cdn.bootcss.com/angular.js/1.4.6/angular.min.js"></script>
+    <script src="//cdn.bootcss.com/angular.js/1.4.6/angular-route.min.js"></script>
+    <script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+    
+    <script src="js/app.min.js"></script>
+</head>
+
+<body ng-cloak>
+    <!-- Sidebars -->
+    <div ng-include="'sidebar.html'" ui-track-as-search-param='true' class="sidebar sidebar-left" ng-controller="sidebarController"></div>
+    <div class="app">
+        <!-- Navbars -->
+        <div class="navbar navbar-app navbar-absolute-top">
+            <div class="navbar-brand navbar-brand-center" ui-yield-to="title"></div>
+            <div class="btn-group pull-left" ui-yield-to="backAction"></div>
+            <div class="btn-group pull-right" ui-yield-to="navbarAction"></div>
+        </div>
+        <div class="navbar navbar-app navbar-absolute-bottom">
+            <div class="btn-group justified">
+                <a ng-click="to('index')" class="btn btn-navbar section-wide" ng-class="{'active':current_path=='/index'}">
+                    <i class="kk kk-30 kk-tab-1"></i>
+                    <span class="block text-gray text-ellipsis">{{"Home" | translate}}</span>
+                </a>
+                <a ng-click="to('tasks')" class="btn btn-navbar section-wide" ng-class="{'active':current_path=='/tasks'}">
+                    <i class="kk kk-30 kk-tab-3"></i>
+                    <span class="block text-gray text-ellipsis">{{"Task List" | translate}}</span>
+                </a>
+                <a ng-click="to('release_task')" class="btn btn-navbar section-wide" ng-class="{'active':current_path=='/release_task'}">
+                    <i class="kk kk-30 kk-tab-6"></i>
+                    <span class="block text-gray text-ellipsis">{{"Create Task" | translate}}</span>
+                </a>
+                <a ng-click="to('translators')" class="btn btn-navbar section-wide" ng-class="{'active':current_path=='/translators'}">
+                    <i class="kk kk-30 kk-tab-4"></i>
+                    <span class="block text-gray text-ellipsis">{{"UE" | translate}}</span>
+                </a>
+                <a ng-click="showDialog()" class="btn btn-navbar section-wide">
+                    <i class="kk kk-30 kk-tab-5"></i>
+                    <span class="block text-gray text-ellipsis">{{"Messages/chat" | translate}}</span>
+                </a>
+            </div>
+        </div>
+        <!-- App Body -->
+        <div class="app-body">
+            <div class="app-content">
+                <ng-view></ng-view>
+            </div>
+        </div>
+        <!-- error tip -->
+        <div class="error-msg section section-warning text-center" ui-state="error_state" ui-if="error_state">{{ errormsg }}</div>
+        <!-- toast tip -->
+        <div class="toast" ui-state="toast_state" ui-if="toast_state">
+            <span class="loader"></span>
+        </div>
+        <!-- sidebar cover -->
+        <div class="sidebar-cover" ng-if="cover.show"></div>
+    </div>
+    <!-- ~ .app -->
+    <div ui-yield-to="modals"></div>
+    <script src="//cdn.bootcss.com/angular-sanitize/1.4.6/angular-sanitize.min.js"></script>
+    <script src="//cdn.bootcss.com/ng-flow/2.6.1/ng-flow-standalone.min.js"></script>
+    <script src="//cdn.bootcss.com/angular-timer/1.3.3/angular-timer.min.js"></script>
+    <script src="//cdn.bootcss.com/moment.js/2.9.0/moment.min.js"></script>
+    <script src="//cdn.bootcss.com/owl-carousel/1.32/owl.carousel.min.js"></script>
+    <script src="//cdn.bootcss.com/angular-translate/2.8.0/angular-translate.min.js"></script>
+    <script src="//cdn.bootcss.com/angular-translate-loader-static-files/2.8.0/angular-translate-loader-static-files.min.js"></script>
+    <!-- facebook jssdk -->
+    <script>
+    (function(d, s, id) {
+        var js, fjs = d.getElementsByTagName(s)[0];
+        if (d.getElementById(id)) {
+            return;
+        }
+        js = d.createElement(s);
+        js.id = id;
+        js.src = "//connect.facebook.net/en_US/sdk.js";
+        fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script', 'facebook-jssdk'));
+    </script>
+    <!-- weibo jssdk -->
+    <script>
+    (function(d, s, id) {
+        var js, sjs = d.getElementsByTagName(s)[0];
+        if (d.getElementById(id)) {
+            return;
+        }
+        js = d.createElement(s);
+        js.id = id;
+        // js.src = "http://tjs.sjs.sinajs.cn/open/api/js/wb.js?appkey=622824244&debug=true";
+        js.src = "http://tjs.sjs.sinajs.cn/open/api/js/wb.js?appkey=622824244";
+        sjs.parentNode.insertBefore(js, sjs);
+    }(document, 'script', 'sina-jssdk'));
+    </script>
+    <script type="text/javascript">
+    $(document).ready(function() {
+        angular.bootstrap($("html"), ['Youyi']);
+    })
+    </script>
+</body>
+
+</html>

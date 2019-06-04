@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<#include "header.html">
+</head>
+<body>
+	<div class="navbar navbar-default" id="navbar">
+		<script type="text/javascript">
+			try {
+				ace.settings.check('navbar', 'fixed')
+			} catch (e) {
+			}
+		</script>
+		<#include "navigate.html">
+	</div>
+
+	<div class="main-container" id="main-container">
+		<script type="text/javascript">
+			try {
+				ace.settings.check('main-container', 'fixed')
+			} catch (e) {
+			}
+		</script>
+
+		<div class="main-container-inner">
+			<a class="menu-toggler" id="menu-toggler" href="#"> <span
+				class="menu-text"></span>
+			</a>
+			<div class="sidebar" id="sidebar">
+				<script type="text/javascript">
+					try {
+						ace.settings.check('sidebar', 'fixed')
+					} catch (e) {
+					}
+				</script>
+
+				<div class="sidebar-shortcuts" id="sidebar-shortcuts">
+					<div class="sidebar-shortcuts-large" id="sidebar-shortcuts-large">
+						<button class="btn btn-success">
+							<i class="icon-signal"></i>
+						</button>
+
+						<button class="btn btn-info">
+							<i class="icon-pencil"></i>
+						</button>
+
+						<button class="btn btn-warning">
+							<i class="icon-group"></i>
+						</button>
+
+						<button class="btn btn-danger">
+							<i class="icon-cogs"></i>
+						</button>
+					</div>
+
+					<div class="sidebar-shortcuts-mini" id="sidebar-shortcuts-mini">
+						<span class="btn btn-success"></span> <span class="btn btn-info"></span>
+
+						<span class="btn btn-warning"></span> <span class="btn btn-danger"></span>
+					</div>
+				</div>
+				<!-- #sidebar-shortcuts -->
+				<!-- .nav-list -->
+				<script type="text/javascript">
+					$(document).ready(function() {
+						$('#2').addClass("active open");
+						$('#27').addClass("open");
+					});
+				</script>
+				<#include "left_common.html">
+				<!-- /.nav-list -->
+
+				<div class="sidebar-collapse" id="sidebar-collapse">
+					<i class="icon-double-angle-left"
+						data-icon1="icon-double-angle-left"
+						data-icon2="icon-double-angle-right"></i>
+				</div>
+
+				<script type="text/javascript">
+					try {
+						ace.settings.check('sidebar', 'collapsed')
+					} catch (e) {
+					}
+				</script>
+			</div>
+
+			<div class="main-content">
+				<div class="breadcrumbs" id="breadcrumbs">
+					<script type="text/javascript">
+						try {
+							ace.settings.check('breadcrumbs', 'fixed')
+						} catch (e) {
+						}
+					</script>
+					<!-- #nav-search -->
+				</div>
+				<br> 
+				<#if ok??>
+					<div style="font-size:16px; color: #ff0000;" class="success-tip" data-id="successTip">${(ok)!''}</div>
+				</#if>
+				<form id="form" action="" method="post">
+					<table class="table table-striped table-bordered table-hover">
+						<thead></thead>
+						<tbody>
+							<tr>
+								<td>满意部位名称</td>
+								<td>
+									<div class="input-group">
+										<input id="part_name" name="part_name" type="text" placeholder="名称" required="required" style="width: 230px; height: 30px;">
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<td>排序【0-100，升序】</td>
+								<td>
+									<div class="input-group">
+										<input id="sort" name="sort" onblur="checkInteger(this)" type="text" placeholder="整数" required="required" style="width: 230px; height: 30px;">
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<td>性别</td>
+								<td>
+									<div class="input-group">
+										<label>
+											<input name="sex"  type="radio" class="ace"  checked="checked" value="0" />
+											<span class="lbl"> 女性</span>
+										</label>
+										<label>
+											<input name="sex" type="radio" class="ace" value="1"/>
+											<span class="lbl"> 男性</span>
+										</label>
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<td></td>
+								<td>
+								<script type="text/javascript">
+									function add() {
+										$("#form").attr("action","/admin/LikePart/add");
+										return true;
+									}
+								</script>
+									<button id="reject1" class="btn btn-lg btn-success" type="submit" onclick="add();">
+										<i class="icon-ok"></i> 增加
+									</button>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</form>
+				<div class="page-content">
+					<div class="page-header">
+						<h1>
+							标签管理 <small> <i class="icon-double-angle-right"></i>
+								满意部位
+							</small>
+						</h1>
+					</div>
+					<!-- /.page-header -->
+
+					<div class="row">
+						<div class="col-xs-12">
+							<!-- PAGE CONTENT BEGINS -->
+
+							<div class="row">
+								<div class="col-xs-12">
+									<div class="table-responsive">
+										<table id="sample-table-1"
+											class="table table-striped table-bordered table-hover">
+											<thead>
+												<tr>
+													<th class="center">序号</th>
+													<th>满意部位名称</th>
+													<th>排序</th>
+													<th>性别</th>
+													<th>
+													<i class="icon-time bigger-110 hidden-480"></i>
+														上传日期</th>
+													<th>操作</th>
+												</tr>
+											</thead>
+											<tbody>
+												<#if list??>
+												 <#list list.getList() as l>
+												<tr>
+													<td class="center"><label>${l_index+1}</label></td>
+													<td>${(l.part_name)!''}</td>
+													<td>${(l.sort)!''}</td>
+													<td>
+														<#if l.type=0>
+														<span class="label label-sm label-info arrowed arrowed-righ">女性</span>
+														<#else>
+														<span class="label label-sm label-warning">男性</span>
+														</#if>
+													</td>
+													<td class="hidden-480">${(l.create_time?string("yyyy-MM-dd HH:mm:ss"))!''}</td>
+													<td>
+														<a class="btn btn-xs btn-success" href="javascript:void(0);" data-rel="tooltip" data-placement="left" title="编辑" data-toggle="modal" data-target="#updateModal_${l.part_id}">
+														<i class="icon-ok bigger-90"></i></a>
+														
+														<a class="btn btn-xs btn-danger" href="/admin/LikePart/delete?part_id=${l.part_id}" 
+														onclick="return confirm('确定删除?');" data-rel="tooltip" data-placement="left" title="删除">
+															<i class="icon-trash bigger-120"></i>
+														</a> 
+												    </td>
+												</tr>
+												<!-- 模态框（Modal） -->
+													<div class="modal fade" id="updateModal_${l.part_id}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+														<div class="modal-dialog">
+															<div class="modal-content">
+																<div class="modal-header">
+																	<button type="button" class="close" data-dismis="modal"
+																		aria-hidden="true">&times;</button>
+																	<h4 class="modal-title" id="myModalLabel">更新标签名称</h4>
+																</div>
+																<form id="form" action="/admin/LikePart/addModify" method="post">
+																<input type="hidden" name="part_id" value="${l.part_id}">
+																	<div class="modal-body">
+																		类型： 
+																			<input type="text" id="rate_${l.part_id}" name="part_name" placeholder="请输入名称" required="required" value="${(l.part_name)!''}">
+																	</div>
+																	<div class="modal-body">
+																		排序： 
+																			<input type="text" id="type_${l.sort}" name="sort" onblur="checkInteger(this)" placeholder="请输入整数" required="required" value="${(l.sort)!''}">
+																	</div>
+																	<div class="modal-footer">
+																		<button type="button" class="btn btn-default"
+																			data-dismiss="modal">关闭</button>
+																		<button type="submit" class="btn btn-primary" >提交</button>
+																	</div>
+																</form>
+															</div>
+														</div>
+													</div>
+												<!-- /.modal-content -->
+												</#list> 
+												</#if> 
+												<#if list.getList().size()=0>
+												<tr data-media="article">
+													<td style="with: 100%; color: #27a9e3;">暂无符合条件的数据记录</td>
+												</tr>
+												</#if>
+											</tbody>
+										</table>
+									</div>
+								</div>
+							</div>
+						
+							<div class="pagination">
+								<#include "/common/admin_paginate.html"> 
+								<@paginate currentPage=list.getPageNumber() totalPage=list.getTotalPage() actionUrl="/admin/LikePart/list?pn=${(pn)!''}"/>
+							</div>
+						</div>
+						<!-- /.col -->
+					</div>
+					<!-- /.row -->
+				</div>
+				<!-- /.page-content -->
+			</div>
+		</div>
+		</div>
+	<!-- basic scripts -->
+
+	<!--[if !IE]> -->
+
+	<!-- 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+		<![endif]
+
+		[if IE]>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<![endif] -->
+
+	<!--[if !IE]> -->
+
+	<script type="text/javascript">
+		window.jQuery
+				|| document
+						.write("<script src='/admin/assets/js/jquery-2.0.3.min.js'>"
+								+ "<"+"/script>");
+	</script>
+
+	<!-- <![endif]-->
+
+	<!--[if IE]>
+<script type="text/javascript">
+ window.jQuery || document.write("<script src='/admin/assets/js/jquery-1.10.2.min.js'>"+"<"+"/script>");
+</script>
+<![endif]-->
+
+	<script type="text/javascript">
+		if ("ontouchend" in document)
+			document
+					.write("<script src='/admin/assets/js/jquery.mobile.custom.min.js'>"
+							+ "<"+"/script>");
+	</script>
+	<script src="/admin/assets/js/bootstrap.min.js"></script>
+	<script src="/admin/assets/js/typeahead-bs2.min.js"></script>
+
+	<!-- page specific plugin scripts -->
+
+	<script src="/admin/assets/js/jquery.dataTables.min.js"></script>
+	<script src="/admin/assets/js/jquery.dataTables.bootstrap.js"></script>
+
+	<!-- ace scripts -->
+
+	<script src="/admin/assets/js/ace-elements.min.js"></script>
+	<script src="/admin/assets/js/ace.min.js"></script>
+
+	<!-- inline scripts related to this page -->
+
+	<script type="text/javascript">
+		jQuery(function($) {
+			var oTable1 = $('#sample-table-2').dataTable({
+				"aoColumns" : [ {
+					"bSortable" : false
+				}, null, null, null, null, null, {
+					"bSortable" : false
+				} ]
+			});
+
+			$('table th input:checkbox').on(
+					'click',
+					function() {
+						var that = this;
+						$(this).closest('table').find(
+								'tr > td:first-child input:checkbox').each(
+								function() {
+									this.checked = that.checked;
+									$(this).closest('tr').toggleClass(
+											'selected');
+								});
+
+					});
+
+			$('[data-rel="tooltip"]').tooltip({
+				placement : tooltip_placement
+			});
+			function tooltip_placement(context, source) {
+				var $source = $(source);
+				var $parent = $source.closest('table')
+				var off1 = $parent.offset();
+				var w1 = $parent.width();
+
+				var off2 = $source.offset();
+				var w2 = $source.width();
+
+				if (parseInt(off2.left) < parseInt(off1.left)
+						+ parseInt(w1 / 2))
+					return 'right';
+				return 'left';
+			}
+		})
+	</script>
+</body>
+</html>

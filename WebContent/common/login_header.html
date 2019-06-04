@@ -1,0 +1,56 @@
+<meta charset="utf-8" />
+		<title>甜心在线-超級管理後台</title>
+		<meta name="keywords" content="甜心在线-超級管理後台" />
+		<meta name="description" content="甜心在线-超級管理後台" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<script type="text/javascript" src="/admin/assets/js/jquery-2.0.3.min.js"></script> 
+		<link href="/admin/assets/css/bootstrap.min.css" rel="stylesheet" />
+			<link rel="stylesheet" href="/admin/assets/css/ace.min.css" />
+		<script type="text/javascript">
+		  //正数
+			function checkRate(obj){
+				var number = /^(([0-9]+\.[0-9]*[1-9][0-9]*)|([0-9]*[1-9][0-9]*\.[0-9]+)|([0-9]*[1-9][0-9]*))$/;
+				if(!number.test(obj.value)){
+					obj.value = "";
+					return false;
+				}
+			}
+			//0-100正数
+			function checkInteger(obj){
+				var number =/^(100|[1-9]\d|\d)$/;
+				if(!number.test(obj.value)){
+					obj.value = "";
+					return false;
+				}
+			}
+			//图片预览
+			function viewmypic(mypic,imgfile) {       
+				if (imgfile.value){       
+				mypic.src="/files/image?name="+imgfile.value;       
+				mypic.style.display="";       
+				mypic.border=1;       
+				}       
+			}   
+			//包括0的数字
+		 	function checkNum(obj){
+		 		var number =/^[0-9]*$/;
+			if(!number.test(obj.value)){
+				obj.value = "";
+				$("[name=stocks]:input").focus();
+				return false;
+				}
+		 	}
+		 	//建立一個可存取到該file的url
+			function getObjectURL(file) {
+				var url = null ; 
+				if (window.createObjectURL!=undefined) { // basic
+					url = window.createObjectURL(file) ;
+				} else if (window.URL!=undefined) { // mozilla(firefox)
+					url = window.URL.createObjectURL(file) ;
+				} else if (window.webkitURL!=undefined) { // webkit or chrome
+					url = window.webkitURL.createObjectURL(file) ;
+				}
+				return url ;
+			}
+	
+		</script>

@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<#include "header.html">
+		<script LANGUAGE="JavaScript">
+				  $(document).ready(function() {
+					  calculateJiyunFee();
+				  });
+    		    function calculateJiyunFee()
+    		    {
+		        	var jiyunType=$("input:radio[name='sex']:checked").val();
+			        switch(jiyunType)
+			        {
+			            case "1":
+			            	getTitle(1);
+			            	getUser_shape(1);
+			            	getUser_tag(1);
+			                break
+			            case "0":
+			            	getTitle(0);
+			            	getUser_shape(0);
+			            	getUser_tag(0);
+			            	break
+			        }
+    		    }
+    		    function getTitle(obj){
+    				  $.ajax({
+    						type: "POST", //用POST方式传输
+    			　			dataType: "JSON", //数据格式:JSON
+    						url : "/admin/Users/getJobs", //发送请求地址
+    						data : { //发送给数据库的数据
+    							"sex" : obj,
+    						},
+    						success: function(data) { // 成功后回调
+    							var jsonss=eval(data);
+    							var selOpt = $("#job option");  
+    						    selOpt.remove(); 
+    							for(var i=0;i<jsonss.length;i++){
+    								$("#job").append("<option value='" + jsonss[i].job + "'>"+jsonss[i].job+"</option>");   //为Select追加一个Option(下拉项)
+    							} 
+    				        },
+    				        error: function(e) { // 失败后回调
+    				           alert("数据异常！");
+    				        }
+    					});
+    				  }
+    		    function getUser_shape(obj){
+  				  $.ajax({
+  						type: "POST", //用POST方式传输
+  			　			dataType: "JSON", //数据格式:JSON
+  						url : "/admin/Users/getUserShape", //发送请求地址
+  						data : { //发送给数据库的数据
+  							"sex" : obj,
+  						},
+  						success: function(data) { // 成功后回调
+  							var jsonss=eval(data);
+  							var selOpt = $("#user_shape option");  
+  						    selOpt.remove(); 
+  							for(var i=0;i<jsonss.length;i++){
+  								$("#user_shape").append("<option value='" + jsonss[i].shape + "'>"+jsonss[i].shape+"</option>");   //为Select追加一个Option(下拉项)
+  							} 
+  				        },
+  				        error: function(e) { // 失败后回调
+  				           alert("数据异常！");
+  				        }
+  					});
+  				  }
+    		    function getUser_tag(obj){
+    				  $.ajax({
+    						type: "POST", //用POST方式传输
+    			　			dataType: "JSON", //数据格式:JSON
+    						url : "/admin/Users/getUserTag", //发送请求地址
+    						data : { //发送给数据库的数据
+    							"sex" : obj,
+    						},
+    						success: function(data) { // 成功后回调
+    							var jsonss=eval(data);
+ 								for(var i=0;i<jsonss.length;i++){
+    								$("#user_tag").append("<label><input name='user_tag' type='checkbox' class='ace' value='" + jsonss[i].tag + "'/><span class='lbl'>" + jsonss[i].tag + "</span> </label>");   //为Select追加一个Option(下拉项)
+    							} 
+    				        },
+    				        error: function(e) { // 失败后回调
+    				           alert("数据异常！");
+    				        }
+    					});
+    				  }
+                </script>
+	</head>
+	<body>
+		<div class="navbar navbar-default" id="navbar">
+			<script type="text/javascript">
+				try{ace.settings.check('navbar' , 'fixed')}catch(e){}
+			</script>
+			<#include "navigate.html">
+		</div>
+
+		<div class="main-container" id="main-container">
+			<script type="text/javascript">
+				try{ace.settings.check('main-container' , 'fixed')}catch(e){}
+			</script>
+
+			<div class="main-container-inner">
+				<a class="menu-toggler" id="menu-toggler" href="#">
+					<span class="menu-text"></span>
+				</a>
+
+				<div class="sidebar" id="sidebar">
+					<script type="text/javascript">
+						try{ace.settings.check('sidebar' , 'fixed')}catch(e){}
+					</script>
+
+					<div class="sidebar-shortcuts" id="sidebar-shortcuts">
+						<div class="sidebar-shortcuts-large" id="sidebar-shortcuts-large">
+							<button class="btn btn-success">
+								<i class="icon-signal"></i>
+							</button>
+
+							<button class="btn btn-info">
+								<i class="icon-pencil"></i>
+							</button>
+
+							<button class="btn btn-warning">
+								<i class="icon-group"></i>
+							</button>
+
+							<button class="btn btn-danger">
+								<i class="icon-cogs"></i>
+							</button>
+						</div>
+
+						<div class="sidebar-shortcuts-mini" id="sidebar-shortcuts-mini">
+							<span class="btn btn-success"></span>
+
+							<span class="btn btn-info"></span>
+
+							<span class="btn btn-warning"></span>
+
+							<span class="btn btn-danger"></span>
+						</div>
+					</div><!-- #sidebar-shortcuts -->
+					  <!-- .nav-list -->
+					<script type="text/javascript">
+						  $(document).ready(function() {
+							  $('#1').addClass("active open");
+							  $('#14').addClass("open");
+						 });
+					 </script>
+					<#include "left_common.html">
+					<!-- /.nav-list -->
+
+					<div class="sidebar-collapse" id="sidebar-collapse">
+						<i class="icon-double-angle-left" data-icon1="icon-double-angle-left" data-icon2="icon-double-angle-right"></i>
+					</div>
+
+					<script type="text/javascript">
+						try{ace.settings.check('sidebar' , 'collapsed')}catch(e){}
+					</script>
+				</div>
+
+				<div class="main-content">
+					<div class="breadcrumbs" id="breadcrumbs">
+						<script type="text/javascript">
+							try{ace.settings.check('breadcrumbs' , 'fixed')}catch(e){}
+						</script>
+						<div class="nav-search" id="nav-search">
+							<form class="form-search">
+								<span class="input-icon">
+									<input type="text" placeholder="Search ..." class="nav-search-input" id="nav-search-input" autocomplete="off" />
+									<i class="icon-search nav-search-icon"></i>
+								</span>
+							</form>
+						</div><!-- #nav-search -->
+					</div>
+
+					<div class="page-content">
+						<div class="page-header">
+							<h1>
+								用户管理
+								<small>
+									<i class="icon-double-angle-right"></i>
+									增加用户信息
+								</small>
+							</h1>
+						</div><!-- /.page-header -->
+
+						<div class="row">
+							<div class="col-xs-12">
+								<!-- PAGE CONTENT BEGINS -->
+
+								<div class="row">
+									<div class="col-xs-12">
+										<div class="table-responsive">
+											<form id="form" action="" name="form" method="post"  enctype="multipart/form-data" onsubmit="return onPost();">
+												<table class="table table-striped table-bordered table-hover">
+													<thead></thead>
+													<tbody>
+														<tr>
+															<td>头像<br><span style="color:#ff0000">图片尺寸</span></td>
+															<td>
+																 <span style="float:left;">
+															       <input name="image_01" type="file" id="imgfile" class="file" size="40"/>
+															     </span>
+															</td>
+														</tr>
+														<tr>
+															<td>登陆账号</td>
+															<td>
+																<div class="input-group">
+																	<input type="text" id="telephone" name="telephone" placeholder="登陆账号"
+																	class="form-control" style="width:230px; height:30px;" required>
+																</div>
+															</td>
+														</tr>
+														<tr>
+															<td>登陆密码</td>
+															<td>
+																<div class="input-group">
+																	<input type="text" name="password" placeholder="" value="123456"
+																	class="form-control" style="width:230px; height:30px;" required>
+																</div>
+															</td>
+														</tr>
+														<tr>
+															<td>昵称</td>
+															<td>
+																<div class="input-group">
+																	<input  type="text" id="nickname" name="nickname" placeholder="昵称"
+																 class="form-control" style="width:230px; height:30px;">
+																</div>
+															</td>
+														</tr>
+														<tr>
+															<td>性别</td>
+															<td>
+																<div class="input-group">
+																	<label>
+																		<input name="sex" type="radio" class="ace" value="1"  onclick="calculateJiyunFee();" />
+																		<span class="lbl"> 男性</span>
+																	</label>
+																	<label>
+																		<input name="sex" type="radio" class="ace"  value="0" onclick="calculateJiyunFee();" checked="checked"/>
+																		<span class="lbl"> 女性</span>
+																	</label>
+																</div>
+															</td>
+														</tr>
+														<tr>
+															<td>对谁感兴趣</td>
+															<td>
+																<div class="input-group">
+																	<label>
+																		<input name="taste" type="radio" class="ace" value="1" checked="checked"/>
+																		<span class="lbl"> 男性</span>
+																	</label>
+																	<label>
+																		<input name="taste" type="radio" class="ace"  value="0"/>
+																		<span class="lbl"> 女性</span>
+																	</label>
+																</div>
+															</td>
+														</tr>
+														<tr>
+															<td>生日</td>
+															<td>
+																<div  style="width:230px; height:30px;" id="datetimepickerBegin" class="input-group">
+															      <input class="form-control date-picker" id="id-date-picker-2"  value="1992-02-12" name="birthday"  type="text" placeholder="请输入生日时间" ></input>
+															      <span class="add-on input-group-addon">
+															        <i class="icon-calendar bigger-110" data-time-icon="icon-time" data-date-icon="icon-calendar"></i>
+															      </span>
+															    </div>  
+															    <script type="text/javascript">
+																	 $('#datetimepickerBegin').datetimepicker({
+																        format: 'yyyy-MM-dd',
+																        language: 'cn',
+																        pickDate: true,
+																        pickTime: true,
+																        hourStep: 1,
+																        minuteStep: 15,
+																        secondStep: 30,
+																        inputMask: true
+																      }); 
+															    </script>
+															</td>
+														</tr>
+														<tr>
+															<td>职业</td>
+															<th>
+																<div class="input-group">
+																	<select style="width:230px" id="job" name="job"></select>
+																</div>
+														</tr>
+														<tr>
+															<td>身高</td>
+															<td>
+																<div class="input-group">
+																	<label>
+																		<input name="height" type="radio" class="ace" value="150CM" />
+																		<span class="lbl"> 150CM</span>
+																	</label>
+																	<label>
+																		<input name="height" type="radio" class="ace"  value="155CM"/>
+																		<span class="lbl"> 155CM</span>
+																	</label>
+																	<label>
+																		<input name="height" type="radio" class="ace"  value="160CM" checked="checked"/>
+																		<span class="lbl"> 160CM</span>
+																	</label>
+																	<label>
+																		<input name="height" type="radio" class="ace"  value="165CM"/>
+																		<span class="lbl"> 165CM</span>
+																	</label>
+																	<label>
+																		<input name="height" type="radio" class="ace"  value="170CM"/>
+																		<span class="lbl"> 170CM</span>
+																	</label>
+																	<label>
+																		<input name="height" type="radio" class="ace"  value="175CM"/>
+																		<span class="lbl"> 175CM</span>
+																	</label>
+																	<label>
+																		<input name="height" type="radio" class="ace"  value="180及以上"/>
+																		<span class="lbl"> 180及以上</span>
+																	</label>
+																</div>
+															</td>
+														</tr>
+														<tr>
+															<td>年收入</td>
+															<th>
+																<div class="input-group">
+																	<select name="income" style="width:230px; height:30px;">
+																		<#if user_incomes??>
+																		  <#list user_incomes as r>
+																		      <option id="income_${r.user_income_id}" value="${r.income}">${r.income}</option>
+																		  </#list>
+																		</#if>
+																	</select>
+																</div>
+														</tr>
+														<tr>
+															<td>学历</td>
+															<td>
+																<div class="input-group">
+																	<label>
+																		<input name="edu" type="radio" class="ace" value="中专"/>
+																		<span class="lbl"> 中专</span>
+																	</label>
+																	<label>
+																		<input name="edu" type="radio" class="ace"  value="大专"/>
+																		<span class="lbl"> 大专</span>
+																	</label>
+																	<label>
+																		<input name="edu" type="radio" class="ace"  value="大学" checked="checked"/>
+																		<span class="lbl"> 大学</span>
+																	</label>
+																	<label>
+																		<input name="edu" type="radio" class="ace"  value="硕士"/>
+																		<span class="lbl"> 硕士</span>
+																	</label>
+																	<label>
+																		<input name="edu" type="radio" class="ace"  value="博士及以上"/>
+																		<span class="lbl"> 博士及以上</span>
+																	</label>
+																</div>
+															</td>
+														</tr>
+														<tr>
+															<td>体型</td>
+															<th>
+																<div class="input-group">
+																<select style="width:230px" id="user_shape" name="user_shape"></select>
+																</div>
+														</tr>
+														<tr>
+															<td>地区</td>
+															<td>
+																<div class="input-group">
+																	<table style="border: 1px solid #ddd">
+																        <tr>
+																            <td align="center" style="width: 130px;">
+																                <select id="SelProvince" name="SelProvince" style="width: 100px;">
+																                    <option value="${(r.provice)!''}" selected>${(r.provice)!''}</option>
+																                </select>
+																            </td>
+																            <td align="center" style="width: 130px;">
+																                <select id="SelCity" name="SelCity" style="width: 100px; margin-left: 10px;">
+																                    <option value="${(r.city)!''}" selected>${(r.city)!''}</option>
+																                </select>
+																            </td>
+																            <td align="center" ><span id="city_notice" style="color: #FF0000"></span></td>
+																        </tr>
+																    </table>  
+																   
+																</div>
+															</td>
+														</tr>
+														<tr>
+															<td>标签</td>
+															<th>
+																<div class="input-group"  id="user_tag">
+																</div>
+														</tr>
+														<tr>
+															<td>婚姻状态</td>
+															<td>
+																<div class="input-group">
+																	<label>
+																		<input name="marry" type="radio" class="ace" value="从未结婚"  checked="checked"/>
+																		<span class="lbl"> 从未结婚</span>
+																	</label>
+																	<label>
+																		<input name="marry" type="radio" class="ace"  value="已婚"/>
+																		<span class="lbl"> 已婚</span>
+																	</label>
+																	<label>
+																		<input name="marry" type="radio" class="ace"  value="离异"/>
+																		<span class="lbl"> 离异</span>
+																	</label>
+																</div>
+															</td>
+														</tr>
+														<tr>
+															<td>饮酒</td>
+															<td>
+																<div class="input-group">
+																	<label>
+																		<input name="drink" type="radio" class="ace" value="从不"/>
+																		<span class="lbl"> 从不</span>
+																	</label>
+																	<label>
+																		<input name="drink" type="radio" class="ace"  value="有时" checked="checked"/>
+																		<span class="lbl"> 有时</span>
+																	</label>
+																	<label>
+																		<input name="drink" type="radio" class="ace"  value="经常"/>
+																		<span class="lbl"> 经常</span>
+																	</label>
+																</div>
+															</td>
+														</tr>
+														<tr>
+															<td>吸烟</td>
+															<td>
+																<div class="input-group">
+																	<label>
+																		<input name="smoke" type="radio" class="ace" value="从不" checked="checked"/>
+																		<span class="lbl"> 从不</span>
+																	</label>
+																	<label>
+																		<input name="smoke" type="radio" class="ace"  value="有时"/>
+																		<span class="lbl"> 有时</span>
+																	</label>
+																	<label>
+																		<input name="smoke" type="radio" class="ace"  value="经常"/>
+																		<span class="lbl"> 经常</span>
+																	</label>
+																</div>
+															</td>
+														</tr>
+														<tr>
+															<td>用户第二张图片<br><span style="color:#ff0000">图片尺寸</span></td>
+															<td>
+																 <span style="float:left;">
+															       <input name="image_02" type="file" id="imgfile02" class="file" size="40"/>
+															     </span>
+															</td>
+														</tr>
+														<tr>
+															<td>用户第三张图片<br><span style="color:#ff0000">图片尺寸</span></td>
+															<td>
+																 <span style="float:left;">
+															       <input name="image_03" type="file" id="imgfile03" class="file" size="40"/>
+															     </span>
+															</td>
+														</tr>
+														<tr>
+															<td>用户第四张图片<br><span style="color:#ff0000">图片尺寸</span></td>
+															<td>
+																 <span style="float:left;">
+															       <input name="image_04" type="file" id="imgfile04" class="file" size="40"/>
+															     </span>
+															</td>
+														</tr>
+														<tr>
+															<td>用户第五张图片<br><span style="color:#ff0000">图片尺寸</span></td>
+															<td>
+																 <span style="float:left;">
+															       <input name="image_05" type="file" id="imgfile05" class="file" size="40"/>
+															     </span>
+															</td>
+														</tr>
+														<tr>
+															<td>用户第六张图片<br><span style="color:#ff0000">图片尺寸</span></td>
+															<td>
+																 <span style="float:left;">
+															       <input name="image_06" type="file" id="imgfile06" class="file" size="40"/>
+															     </span>
+															</td>
+														</tr>
+														<tr>
+															<td>个性签名</td>
+															<td>
+																<div class="input-group">
+																	<textarea rows="3" cols="100" id="heart" name="heart" placeholder="个性签名..."></textarea>
+																</div>
+															</td>
+														</tr>
+														<tr>
+															<td>
+																<a class="btn btn-lg btn-danger" type="submit" href='javascript:history.go(-1)'>
+																	<i class="icon-bolt bigger-110"></i>
+						                                               	返回
+																	<i class="icon-arrow-right icon-on-right"></i>
+																</a>
+															</td>
+															<td>
+															    <script type="text/javascript">
+																    var ischeck = false;   
+																    function checkok(){
+																    	   if(!ischeck){
+																    		   ischeck=true;  
+																    		   $("#form").attr("action","/admin/Users/addCommit");
+																    	   }else{
+																    		   // alert("无需重复提交！");  
+																    		   ischeck=false;  
+																    	   }
+																    	   return ischeck;
+															         }
+															    </script>
+																       <button id="reject1" class="btn btn-lg btn-success" type="submit"  onclick="checkok();">
+																			<i class="icon-ok"></i>
+																			注册
+																	   </button>
+															</td>
+														</tr>
+													</tbody>
+												</table>
+												</form>
+										</div>
+									</div>
+								</div>
+	
+							</div><!-- /.col -->
+						</div><!-- /.row -->
+					</div><!-- /.page-content -->
+				</div><!-- /.main-content -->
+			</div>
+			</div>
+
+		<!-- basic scripts -->
+
+		<!--[if !IE]> -->
+
+	<!-- 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+		<![endif]
+
+		[if IE]>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<![endif] -->
+
+		<!--[if !IE]> -->
+
+		<script type="text/javascript">
+			window.jQuery || document.write("<script src='/admin/assets/js/jquery-2.0.3.min.js'>"+"<"+"/script>");
+		</script>
+
+		<!-- <![endif]-->
+
+		<!--[if IE]>
+<script type="text/javascript">
+ window.jQuery || document.write("<script src='/admin/assets/js/jquery-1.10.2.min.js'>"+"<"+"/script>");
+</script>
+<![endif]-->
+
+		<script type="text/javascript">
+			if("ontouchend" in document) document.write("<script src='/admin/assets/js/jquery.mobile.custom.min.js'>"+"<"+"/script>");
+		</script>
+		<script src="/admin/assets/js/bootstrap.min.js"></script>
+		<script src="/admin/assets/js/typeahead-bs2.min.js"></script>
+
+		<!-- page specific plugin scripts -->
+
+		<script src="/admin/assets/js/jquery.dataTables.min.js"></script>
+		<script src="/admin/assets/js/jquery.dataTables.bootstrap.js"></script>
+
+		<!-- ace scripts -->
+
+		<script src="/admin/assets/js/ace-elements.min.js"></script>
+		<script src="/admin/assets/js/ace.min.js"></script>
+
+		<!-- inline scripts related to this page -->
+
+		<script type="text/javascript">
+			jQuery(function($) {
+				var oTable1 = $('#sample-table-2').dataTable( {
+				"aoColumns": [
+			      { "bSortable": false },
+			      null, null,null, null, null,
+				  { "bSortable": false }
+				] } );
+				
+				
+				$('table th input:checkbox').on('click' , function(){
+					var that = this;
+					$(this).closest('table').find('tr > td:first-child input:checkbox')
+					.each(function(){
+						this.checked = that.checked;
+						$(this).closest('tr').toggleClass('selected');
+					});
+						
+				});
+			
+			
+				$('[data-rel="tooltip"]').tooltip({placement: tooltip_placement});
+				function tooltip_placement(context, source) {
+					var $source = $(source);
+					var $parent = $source.closest('table')
+					var off1 = $parent.offset();
+					var w1 = $parent.width();
+			
+					var off2 = $source.offset();
+					var w2 = $source.width();
+			
+					if( parseInt(off2.left) < parseInt(off1.left) + parseInt(w1 / 2) ) return 'right';
+					return 'left';
+				}
+			})
+		</script>
+	<!-- 城市值 -->
+	<script type="text/javascript" src="/admin/assets/js/jquery.cityselect.js"></script>
+ 	<script type="text/javascript">
+		 $(document).ready(function () {
+			    //加载省份列表信息
+			    $.ajax({
+			        url: "/admin/assets/pallArea.xml",
+			        dataType: "xml",
+			        success: function (xml) {
+			            $(xml).find("province").each(function () {                                                  //找到(province)省份节点;
+			                $("<option></option>").html($(this).attr("name")).appendTo("#SelProvince");             //加载(province)省份信息到列表中
+			            })
+			        }
+			    })
+			    //省份列表信息更改时，加载城市列表信息
+			    $("#SelProvince").change(function () {
+			        var value = $("#SelProvince").val();                                                            //省份值;
+			        if (value != "请选择") {
+			            $("#SelCity").css("display", "block").find("option").remove();                              //显示城市下拉列表框删除城市下拉列表中的数据;
+			            $("#SelCity").html("<option>请选择</option>");                                              //加载城市列表中的请选择;
+			            $("#SelArea").find("option").remove();                                                      //删除地区下拉列表中的数据;
+			            $("#SelArea").html("<option>请选择</option>")                                               //加载地区列表中的请选择;
+			            $.ajax({
+			                url: "/admin/assets/pallArea.xml",
+			                dataType: "xml",
+			                success: function (xml) {
+			                    $(xml).find("[name='" + value + "']").find("city").each(function () {               //根据省份name属性得到子节点City节点name属性;
+			                        $("<option></option>").html($(this).attr("name")).appendTo("#SelCity");         //加载City(城市)信息到下拉列表中;
+			                    })
+			                }
+			            })
+			        }
+			    })
+			    //城市列表信息改变时，加载地区列表信息
+			    $("#SelCity").change(function () {
+			        var value = $("#SelCity").val();                                                                //城市值;
+			        if (value != "请选择") {
+			            $("#SelArea").css("display", "block").find("option").remove();                              //显示地区下拉列表框删除地区下拉列表中的数据;
+			            $("#SelArea").html("<option>请选择</option>");                                              //加载地区列表中的请选择;
+			            $.ajax({
+			                url: "/admin/assets/pallArea.xml",
+			                dataType: "xml",
+			                success: function (xml) {
+			                    $(xml).find("[name='" + value + "']").find("country").each(function () {            //根据城市节点name得到子节点Area节点name属性;
+			                        $("<option></option>").html($(this).attr("name")).appendTo("#SelArea");         //加载到Area(地区)下拉列表中;
+			                    })
+			                }
+			            })
+			        }
+			    })
+			});
+    </script>
+		<!-- 上传图片JS -->
+		<script>
+		    $("#imgfile").fileinput({
+				showUpload: false,
+				showRemove:true
+			});
+		</script>
+		<!-- end -->
+		<!-- inline scripts related to this page -->
+		<script type="text/javascript">
+			jQuery(function($) {
+				$(".chosen-select").chosen({width: "95%"}); 
+			});
+		</script>
+
+</body>
+</html>
