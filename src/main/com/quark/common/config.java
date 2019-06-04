@@ -31,6 +31,7 @@ import com.quark.handler.RpHandler;
 import com.quark.model.*;
 import com.quark.model.extend.AdminUser;
 import com.quark.model.extend.Applogs;
+import com.quark.model.extend.Audit;
 import com.quark.model.extend.BlackList;
 import com.quark.model.extend.Browse;
 import com.quark.model.extend.CarCategroy;
@@ -242,6 +243,7 @@ public class config extends JFinalConfig {
 		arp.addMapping("car_categroy", CarCategroy.class);
 		arp.addMapping("car_classify", CarClassify.class);
 		arp.addMapping("certification", "id",Certification.class);
+		arp.addMapping("certification", "id",Audit.class);
 
 		/**
 		 * view

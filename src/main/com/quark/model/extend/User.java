@@ -112,6 +112,11 @@ public class User extends Model<User>{
 
     public static final String is_video="columnName=is_video,remarks=视频认证状态,dataType=String,defaultValue=no";
 
+    public static final String is_edu="columnName=is_edu,remarks=学历认证状态,dataType=String,defaultValue=no";
+    
+    public static final String is_house="columnName=is_house,remarks=房产认证状态,dataType=String,defaultValue=no";
+    
+
 		
 	
 }
