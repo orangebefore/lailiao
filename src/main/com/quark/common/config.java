@@ -10,47 +10,32 @@ import com.jfinal.config.Plugins;
 import com.jfinal.config.Routes;
 import com.jfinal.core.Const;
 import com.jfinal.core.Controller;
-import com.jfinal.ext.interceptor.Restful;
 import com.jfinal.kit.PathKit;
 import com.jfinal.plugin.activerecord.ActiveRecordPlugin;
-import com.jfinal.plugin.bonecp.BoneCpPlugin;
 import com.jfinal.plugin.c3p0.C3p0Plugin;
-import com.jfinal.plugin.ehcache.EhCachePlugin;
-import com.jfinal.upload.UploadFile;
-import com.jolbox.bonecp.BoneCP;
-import com.quark.admin.controller.AdminUsers;
 import com.quark.admin.controller.Files;
 import com.quark.admin.controller.JavaFiles;
-import com.quark.admin.controller.Login;
 import com.quark.admin.controller.SwiftFiles;
 import com.quark.admin.controller.Tongji;
 import com.quark.admin.controller.api;
 import com.quark.admin.controller.rp;
-import com.quark.handler.H5Handler;
 import com.quark.handler.RpHandler;
-import com.quark.model.*;
 import com.quark.model.extend.AdminUser;
 import com.quark.model.extend.Applogs;
 import com.quark.model.extend.BlackList;
 import com.quark.model.extend.Browse;
-import com.quark.model.extend.CarCategroy;
-import com.quark.model.extend.CarClassify;
 import com.quark.model.extend.CellPhone;
 import com.quark.model.extend.Certification;
 import com.quark.model.extend.Charge;
 import com.quark.model.extend.ChargeGold;
 import com.quark.model.extend.Collection;
-import com.quark.model.extend.Constellation;
 import com.quark.model.extend.Gift;
 import com.quark.model.extend.GoldPrice;
-import com.quark.model.extend.Interest;
 import com.quark.model.extend.Job;
-import com.quark.model.extend.LikeDate;
 import com.quark.model.extend.LoveYu;
 import com.quark.model.extend.MyGift;
 import com.quark.model.extend.News;
 import com.quark.model.extend.Notices;
-import com.quark.model.extend.Part;
 import com.quark.model.extend.Price;
 import com.quark.model.extend.ReportBean;
 import com.quark.model.extend.Search;
@@ -82,7 +67,10 @@ public class config extends JFinalConfig {
 	//public static final String pay_notify_host = "114.215.102.155:9001";
 	public static final String pay_notify_host = "120.24.16.244";
 	public static final String controllers = "com.quark.app.controller";
-
+	
+	//public static final String images_path = "c:/videos/";
+	public static final String videos_path = "C:/videos/";
+	
 	//public static final String images_path = "c:/images/";
 	public static final String images_path = "C:/images/";
 	public static final String ueditor_images_path = "C:/images/ueditor/";
@@ -232,14 +220,7 @@ public class config extends JFinalConfig {
 		arp.addMapping("charge_gold","charge_gold_id", ChargeGold.class);
 		arp.addMapping("cell_phone","cell_phone_id", CellPhone.class);
 		arp.addMapping("notices", Notices.class);
-		arp.addMapping("like_part","part_id", Part.class);
-		arp.addMapping("interest", "interest_id",Interest.class);
-		arp.addMapping("like_date", "date_id", LikeDate.class);
-		arp.addMapping("constellation", "star_id", Constellation.class );
-		arp.addMapping("car_categroy", CarCategroy.class);
-		arp.addMapping("car_classify", CarClassify.class);
-		arp.addMapping("certification", "id",Certification.class);
-
+		arp.addMapping("certification", Certification.class);
 		/**
 		 * view
 		 */

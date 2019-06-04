@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<#include "header.html">
+</head>
+<body>
+	<div class="navbar navbar-default" id="navbar">
+		<script type="text/javascript">
+			try {
+				ace.settings.check('navbar', 'fixed')
+			} catch (e) {
+			}
+		</script>
+		<#include "navigate.html">
+	</div>
+
+	<div class="main-container" id="main-container">
+		<script type="text/javascript">
+			try {
+				ace.settings.check('main-container', 'fixed')
+			} catch (e) {
+			}
+		</script>
+
+		<div class="main-container-inner">
+			<a class="menu-toggler" id="menu-toggler" href="#"> <span
+				class="menu-text"></span>
+			</a>
+			<div class="sidebar" id="sidebar">
+				<script type="text/javascript">
+					try {
+						ace.settings.check('sidebar', 'fixed')
+					} catch (e) {
+					}
+				</script>
+
+				<div class="sidebar-shortcuts" id="sidebar-shortcuts">
+					<div class="sidebar-shortcuts-large" id="sidebar-shortcuts-large">
+						<button class="btn btn-success">
+							<i class="icon-signal"></i>
+						</button>
+
+						<button class="btn btn-info">
+							<i class="icon-pencil"></i>
+						</button>
+
+						<button class="btn btn-warning">
+							<i class="icon-group"></i>
+						</button>
+
+						<button class="btn btn-danger">
+							<i class="icon-cogs"></i>
+						</button>
+					</div>
+
+					<div class="sidebar-shortcuts-mini" id="sidebar-shortcuts-mini">
+						<span class="btn btn-success"></span> <span class="btn btn-info"></span>
+
+						<span class="btn btn-warning"></span> <span class="btn btn-danger"></span>
+					</div>
+				</div>
+				<!-- #sidebar-shortcuts -->
+				<!-- .nav-list -->
+				<script type="text/javascript">
+					$(document).ready(function() {
+						$('#8').addClass("active open");
+						$('#83').addClass("open");
+					});
+				</script>
+				<#include "left_common.html">
+				<!-- /.nav-list -->
+
+				<div class="sidebar-collapse" id="sidebar-collapse">
+					<i class="icon-double-angle-left"
+						data-icon1="icon-double-angle-left"
+						data-icon2="icon-double-angle-right"></i>
+				</div>
+
+				<script type="text/javascript">
+					try {
+						ace.settings.check('sidebar', 'collapsed')
+					} catch (e) {
+					}
+				</script>
+			</div>
+
+			<div class="main-content">
+				<div class="breadcrumbs" id="breadcrumbs">
+					<script type="text/javascript">
+						try {
+							ace.settings.check('breadcrumbs', 'fixed')
+						} catch (e) {
+						}
+					</script>
+					<!-- #nav-search -->
+				</div>
+				<br> 
+				<#if ok??>
+					<div style="font-size:16px; color: #ff0000;" class="success-tip" data-id="successTip">${(ok)!''}</div>
+				</#if>
+				<div class="page-content">
+					<div class="page-header">
+						<h1>
+							认证管理 <small> <i class="icon-double-angle-right"></i>
+								身份证管理
+							</small>
+						</h1>
+					</div>
+					<!-- /.page-header -->
+
+					<div class="row">
+						<div class="col-xs-12">
+							<!-- PAGE CONTENT BEGINS -->
+
+							<div class="row">
+								<div class="col-xs-12">
+								<div class="widget-header">
+											<div class="widget-toolbar no-border">
+											
+							                </div>
+										</div>
+										<div class="widget-body">
+										<div class="widget-main padding-6">
+										<form id="form" name="form" method="post">
+											<table  class="">
+												<thead>
+												<tr>
+						                                <th>审核状态</th>
+														<th>
+															<select name="id_card_status">
+																<option id="id_card_status_2" onclick="checkOk()"  value="2">待审核</option>
+											                    <option id="id_card_status_1" onclick="checkOk()"  value="1">已通过</option>
+											                    <option id="id_card_status_0" onclick="checkOk()"  value="0">未通过</option>
+															</select>
+															<script type="text/javascript">
+																$("#id_card_status_${id_card_status}").prop("selected",true);
+															</script>
+														</th>
+						                                <th><span id="time_notice" style="color: #FF0000"></span></th>
+													</tr>
+												</thead>
+												</table>
+												</form>
+												<script type="text/javascript">
+													function checkOk(){
+														$("#form").attr("action","/admin/IdCards/list");	
+														document.form.submit();
+													} 
+											    </script>		
+										</div></div>
+										<div class="widget-body">
+										<div class="widget-main padding-6">
+									<div class="table-responsive">
+										<table id="sample-table-1"
+											class="table table-striped table-bordered table-hover">
+											<thead>
+												<tr>
+													<th class="center">序号</th>
+													<th>认证用户</th>
+													<th>身份证正面</th>
+													<th>身份证反面</th>
+													<th>未通过理由</th>
+													<th>操作</th>
+												</tr>
+											</thead>
+											<tbody>
+												<#if list??>
+												<#list list.getList() as r>
+												<tr>
+													<td class="center"><label>${r_index+1}</label></td>
+													<td>${(r.nickname)!''}</td>
+													<td>
+						                                <div class="feed-element">
+						                                	<img alt="" style="width:85mm;height:54mm;" src="/files/image?name=${(r.id_card_up)!''}">
+						                               	</div>
+				                                    </td>
+													<td>
+						                                <div class="feed-element">
+						                                	<img alt="" style="width:85mm;height:54mm;" src="/files/image?name=${(r.id_card_down)!''}">
+						                               	</div>
+				                                    </td>
+				                                    <td>
+						                                ${(r.id_card_reason)!''}
+				                                    </td>
+				                                    
+													<td>
+														<a class="btn btn-xs btn-success" onclick="return confirm('确定通过?');" href="/admin/IdCards/modifyIsCard?user_id=${(r.user_id)!''}&id_card_status=${id_card_status}&pn=${pn}&flag=true&id=${(r.id)!''}" data-rel="tooltip" data-placement="left" title="通过">
+															<i class="icon-ok bigger-90"></i></a>
+														<a class="btn btn-xs btn-danger" href="javascript:void(0);" data-rel="tooltip" data-target="#updateModal_${r.id}" data-toggle="modal" data-placement="left" title="未通过">
+															<i class="icon-remove bigger-90"></i>
+														</a> 
+												    </td>
+												</tr>
+												<!-- 模态框（Modal） -->
+													<div class="modal fade" id="updateModal_${r.id}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+														<div class="modal-dialog">
+															<div class="modal-content">
+																<div class="modal-header">
+																	<button type="button" class="close" data-dismis="modal"
+																		aria-hidden="true">&times;</button>
+																	<h4 class="modal-title" id="myModalLabel">审核未通过原因</h4>
+																</div>
+																<form id="form" action="/admin/IdCards/modifyIsCard" method="post">
+																<input type="hidden" name="id" value="${r.id}">
+																<input type="hidden" name="user_id" value="${(r.user_id)!''}">
+																<input type="hidden" name="flag" value="false">
+																	<div class="modal-body">
+																		审核未通过原因： 
+																			<input type="text" id="id_card_reason" name="id_card_reason" placeholder="请输入未通过原因" required="required">
+																	</div>
+																	<div class="modal-footer">
+																		<button type="button" class="btn btn-default"
+																			data-dismiss="modal">关闭</button>
+																		<button type="submit" class="btn btn-primary" >提交</button>
+																	</div>
+																</form>
+															</div>
+														</div>
+													</div>
+												<!-- /.modal-content -->
+												</#list> 
+												</#if> 
+												
+												<#if list.getList().size()=0>
+												<tr data-media="article">
+													<td style="with: 100%; color: #27a9e3;">暂无符合条件的数据记录</td>
+												</tr>
+												</#if>
+											</tbody>
+										</table>
+									</div>
+									</div></div>
+								</div>
+							</div>
+						
+							<div class="pagination">
+								<#include "/common/admin_paginate.html"> 
+								<@paginate currentPage=list.getPageNumber() totalPage=list.getTotalPage() actionUrl="/admin/IdCards/list?"/>
+							</div>
+						</div>
+						<!-- /.col -->
+					</div>
+					<!-- /.row -->
+				</div>
+				<!-- /.page-content -->
+			</div>
+		</div>
+		</div>
+	<!-- basic scripts -->
+
+	<!--[if !IE]> -->
+
+	<!-- 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+		<![endif]
+
+		[if IE]>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<![endif] -->
+
+	<!--[if !IE]> -->
+
+	<script type="text/javascript">
+		window.jQuery
+				|| document
+						.write("<script src='/admin/assets/js/jquery-2.0.3.min.js'>"
+								+ "<"+"/script>");
+	</script>
+
+	<!-- <![endif]-->
+
+	<!--[if IE]>
+<script type="text/javascript">
+ window.jQuery || document.write("<script src='/admin/assets/js/jquery-1.10.2.min.js'>"+"<"+"/script>");
+</script>
+<![endif]-->
+
+	<script type="text/javascript">
+		if ("ontouchend" in document)
+			document
+					.write("<script src='/admin/assets/js/jquery.mobile.custom.min.js'>"
+							+ "<"+"/script>");
+	</script>
+	<script src="/admin/assets/js/bootstrap.min.js"></script>
+	<script src="/admin/assets/js/typeahead-bs2.min.js"></script>
+
+	<!-- page specific plugin scripts -->
+
+	<script src="/admin/assets/js/jquery.dataTables.min.js"></script>
+	<script src="/admin/assets/js/jquery.dataTables.bootstrap.js"></script>
+
+	<!-- ace scripts -->
+
+	<script src="/admin/assets/js/ace-elements.min.js"></script>
+	<script src="/admin/assets/js/ace.min.js"></script>
+
+	<!-- inline scripts related to this page -->
+
+	<script type="text/javascript">
+		jQuery(function($) {
+			var oTable1 = $('#sample-table-2').dataTable({
+				"aoColumns" : [ {
+					"bSortable" : false
+				}, null, null, null, null, null, {
+					"bSortable" : false
+				} ]
+			});
+
+			$('table th input:checkbox').on(
+					'click',
+					function() {
+						var that = this;
+						$(this).closest('table').find(
+								'tr > td:first-child input:checkbox').each(
+								function() {
+									this.checked = that.checked;
+									$(this).closest('tr').toggleClass(
+											'selected');
+								});
+
+					});
+
+			$('[data-rel="tooltip"]').tooltip({
+				placement : tooltip_placement
+			});
+			function tooltip_placement(context, source) {
+				var $source = $(source);
+				var $parent = $source.closest('table')
+				var off1 = $parent.offset();
+				var w1 = $parent.width();
+
+				var off2 = $source.offset();
+				var w2 = $source.width();
+
+				if (parseInt(off2.left) < parseInt(off1.left)
+						+ parseInt(w1 / 2))
+					return 'right';
+				return 'left';
+			}
+		})
+	</script>
+</body>
+</html>

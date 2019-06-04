@@ -17,6 +17,7 @@
 package com.jfinal.core;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.Enumeration;
@@ -144,6 +145,7 @@ public abstract class Controller {
 		// end
 		return request.getParameter(name);
 	}
+	
 
 	/**
 	 * Returns the value of a request parameter as a String, or default value if
