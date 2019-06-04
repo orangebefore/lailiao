@@ -62,6 +62,7 @@ import com.quark.model.extend.Tokens;
 import com.quark.model.extend.TongjiCharge;
 import com.quark.model.extend.TongjiRegist;
 import com.quark.model.extend.User;
+import com.quark.model.extend.UserExpect;
 import com.quark.model.extend.UserIncome;
 import com.quark.model.extend.UserOld;
 import com.quark.model.extend.UserShape;
@@ -244,6 +245,8 @@ public class config extends JFinalConfig {
 		arp.addMapping("car_classify", CarClassify.class);
 		arp.addMapping("certification", "id",Certification.class);
 		arp.addMapping("certification", "id",Audit.class);
+		arp.addMapping("user_expect", "expect_id",UserExpect.class);
+
 
 		/**
 		 * view

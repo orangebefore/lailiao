@@ -64,7 +64,7 @@ public class LikePart extends Controller{
 		}
 		List<Part> parts = Part.dao.find("select * from like_part where part_name='"+part_name+"'");
 		if (parts.size()==0) {
-			boolean save = part.set("part_name", part_name).set("sort", sort).set(part.type, sex)
+			boolean save = part.set("part_name", part_name).set("sort", sort).set("type", sex)
 					.set(part.create_time, DateUtils.getCurrentDateTime())
 					.save();
 			if (save) {
