@@ -10,25 +10,16 @@ import com.jfinal.config.Plugins;
 import com.jfinal.config.Routes;
 import com.jfinal.core.Const;
 import com.jfinal.core.Controller;
-import com.jfinal.ext.interceptor.Restful;
 import com.jfinal.kit.PathKit;
 import com.jfinal.plugin.activerecord.ActiveRecordPlugin;
-import com.jfinal.plugin.bonecp.BoneCpPlugin;
 import com.jfinal.plugin.c3p0.C3p0Plugin;
-import com.jfinal.plugin.ehcache.EhCachePlugin;
-import com.jfinal.upload.UploadFile;
-import com.jolbox.bonecp.BoneCP;
-import com.quark.admin.controller.AdminUsers;
 import com.quark.admin.controller.Files;
 import com.quark.admin.controller.JavaFiles;
-import com.quark.admin.controller.Login;
 import com.quark.admin.controller.SwiftFiles;
 import com.quark.admin.controller.Tongji;
 import com.quark.admin.controller.api;
 import com.quark.admin.controller.rp;
-import com.quark.handler.H5Handler;
 import com.quark.handler.RpHandler;
-import com.quark.model.*;
 import com.quark.model.extend.AdminUser;
 import com.quark.model.extend.Applogs;
 import com.quark.model.extend.Audit;
@@ -57,6 +48,7 @@ import com.quark.model.extend.Price;
 import com.quark.model.extend.ReportBean;
 import com.quark.model.extend.Search;
 import com.quark.model.extend.SloveLanguage;
+import com.quark.model.extend.SuperstarPrice;
 import com.quark.model.extend.Sweet;
 import com.quark.model.extend.Tag;
 import com.quark.model.extend.Tokens;
@@ -248,6 +240,7 @@ public class config extends JFinalConfig {
 		arp.addMapping("certification", "id",Audit.class);
 		arp.addMapping("user_expect", "expect_id",UserExpect.class);
 		arp.addMapping("invitation_price", "ip_id",InvitationPriceEntity.class);
+		arp.addMapping("superstar_price", "sp_id",SuperstarPrice.class);
 
 
 		/**
