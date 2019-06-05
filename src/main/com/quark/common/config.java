@@ -45,6 +45,7 @@ import com.quark.model.extend.Constellation;
 import com.quark.model.extend.Gift;
 import com.quark.model.extend.GoldPrice;
 import com.quark.model.extend.Interest;
+import com.quark.model.extend.InvitationPriceEntity;
 import com.quark.model.extend.Job;
 import com.quark.model.extend.LikeDate;
 import com.quark.model.extend.LoveYu;
@@ -246,6 +247,7 @@ public class config extends JFinalConfig {
 		arp.addMapping("certification", "id",Certification.class);
 		arp.addMapping("certification", "id",Audit.class);
 		arp.addMapping("user_expect", "expect_id",UserExpect.class);
+		arp.addMapping("invitation_price", "ip_id",InvitationPriceEntity.class);
 
 
 		/**

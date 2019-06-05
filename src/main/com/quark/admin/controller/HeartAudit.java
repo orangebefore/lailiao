@@ -76,6 +76,7 @@ public class HeartAudit extends Controller {
 		setAttr("list", giftPage);
 		setAttr("heart_status", heart_status);
 		setAttr("pn", currentPage);
+		setAttr("heart_status", heart_status);
 		render("/admin/HeartAuditList.html");
 	}
 	/**

@@ -8,9 +8,9 @@ import com.jfinal.plugin.activerecord.Model;
 *
 * @datetime2018-01-18 14:52:01
 */
-public class InvitationPrice extends Model<InvitationPrice>{
+public class InvitationPriceEntity extends Model<InvitationPriceEntity>{
 
-    public static InvitationPrice dao = new InvitationPrice();
+    public static InvitationPriceEntity dao = new InvitationPriceEntity();
 
     public static final String ip_id="columnName=ip_id,remarks=邀约置顶价格,dataType=int,defaultValue=null";
 

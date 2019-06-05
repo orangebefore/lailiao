@@ -172,7 +172,9 @@
 				                                        <th>编号</th>
 				                                        <th>用户昵称</th>
 				                                        <th>个性签名内容</th>
-				                                        <th>未通过理由</th>
+				                                        <#if heart_status == 0>
+				                                        	<th>未通过理由</th>
+				                                        </#if>
 				                                        <th>审核状态</th>
 				                                        <th>操作</th>
 				                                    </tr>
@@ -185,7 +187,9 @@
 				                                        <td>${(r.id)!''}</td>
 				                                        <td>${(r.nickname)!''}</td>
 				                                        <td>${(r.is_heart)!''}</td>
-				                                        <td>${(r.heart_reason)!''}</td>
+				                                        <#if heart_status == 0>
+				                                        	<th>${(r.heart_reason)!''}</th>
+				                                        </#if>
 				                                        <td>
 					                                        <#if r.heart_status=2>待审核
 					                                        <#elseif r.heart_status=1>审核通过
