@@ -12,6 +12,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.jws.soap.SOAPBinding.Use;
+
 import com.jfinal.aop.Before;
 import com.jfinal.core.Controller;
 import com.jfinal.plugin.activerecord.tx.Tx;
@@ -293,6 +295,7 @@ public class UserCenter extends Controller implements Serializable {
 	@URLParam(defaultValue = "", explain = Value.Infer, type = Type.Date, name = User.birthday)
 	@URLParam(defaultValue = "", explain = Value.Infer, type = Type.String, name = User.job)
 	@URLParam(defaultValue = "{150、155、160、165、170、175、180及以上}", explain = Value.Infer, type = Type.String, name = User.height)
+	@URLParam(defaultValue = "", explain = Value.Infer, type = Type.String, name = User.weight)
 	@URLParam(defaultValue = "", explain = Value.Infer, type = Type.Int, name = User.sex)
 	@URLParam(defaultValue = "", explain = Value.Infer, type = Type.Int, name = User.taste)
 	@URLParam(defaultValue = "", explain = Value.Infer, type = Type.Int, name = User.setting_telecontact)
@@ -301,6 +304,7 @@ public class UserCenter extends Controller implements Serializable {
 	@URLParam(defaultValue = "", explain = Value.Infer, type = Type.String, name = User.latitude)
 	@URLParam(defaultValue = "", explain = Value.Infer, type = Type.String, name = User.longitude)
 	@URLParam(defaultValue = "{轻奢、高奢、中等}", explain = "幸福期望", type = Type.String, name = "hope")
+	@URLParam(defaultValue = "{一起看电影、一起吃饭、一起散步、一起小喝、一起唱歌}", explain = "期望约会方式", type = Type.String, name = User.date_id)
 	@URLParam(defaultValue = "", explain = "已#号分割的tag标签组", type = Type.String, name = "tag_list")
 	@URLParam(defaultValue = "{app、h5}", explain = Value.Infer, type = Type.String, name = "invoke")
 	@ReturnOutlet(name = "RegistTelResponse{message}", remarks = "message", dataType = DataType.String, defaultValue = "")
@@ -317,6 +321,8 @@ public class UserCenter extends Controller implements Serializable {
 			String birthday = getPara("birthday", "");
 			String job = getPara("job", "");
 			String height = getPara("height", "");
+			String weight = getPara("weight", "");
+			String date_id = getPara("date_id","");
 			int sex = getParaToInt("sex");
 			int taste = 0;// getParaToInt("taste");
 			if (sex == 0) {
@@ -343,14 +349,6 @@ public class UserCenter extends Controller implements Serializable {
 				renderMultiJson("RegistTelResponse");
 				return;
 			}
-			if (password.length() < 6) {
-				responseValues.put("message", "请输入6位以上的登录密码");
-				responseValues.put("status", 4);
-				responseValues.put("code", 200);
-				setAttr("RegistTelResponse", responseValues);
-				renderMultiJson("RegistTelResponse");
-				return;
-			}
 			User user = user = User.dao.findFirst("select * from user where telephone='" + telephone + "'");
 			if (user != null) {
 				responseValues.put("message", "");
@@ -369,6 +367,7 @@ public class UserCenter extends Controller implements Serializable {
 			}
 			boolean save = user.set(User.telephone, telephone).set(User.password, MD5Util.string2MD5(password))
 					.set(User.nickname, nickname).set(User.birthday, birthday).set(User.job, job)
+					.set(User.weight, weight).set(User.date_id, date_id)
 					.set(User.height, height).set(User.sex, sex).set(User.taste, taste)
 					.set(User.setting_telecontact, setting_telecontact).set(User.province, province)
 					.set(User.city, city).set(User.latitude, latitude).set(User.longitude, longitude)

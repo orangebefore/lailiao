@@ -4,6 +4,7 @@
 package com.quark.app.controller;
 
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -42,6 +43,7 @@ import com.quark.model.extend.Tokens;
 import com.quark.model.extend.User;
 import com.quark.model.extend.UserTag;
 import com.quark.utils.DateUtils;
+import com.sun.org.apache.bcel.internal.generic.NEW;
 
 /**
  * @author cluo
@@ -260,8 +262,8 @@ public class Home extends Controller implements Serializable {
 	@URLParam(defaultValue = "", explain = "到年龄，默认则不限", type = Type.String, name = "age_to")
 	@URLParam(defaultValue = "", explain = "从-身高，默认则不限", type = Type.String, name = "height_from")
 	@URLParam(defaultValue = "", explain = "到-身高，默认则不限", type = Type.String, name = "height_to")
-	@URLParam(defaultValue = "", explain = "请求接口：http://sugarbaby.online/rp/index.html#p=个人资料", type = Type.String, name = "shape")
-	@URLParam(defaultValue = "", explain = "学历，跟个人中心设置一样,默认则不限", type = Type.String, name = "school")
+	//@URLParam(defaultValue = "", explain = "请求接口：http://sugarbaby.online/rp/index.html#p=个人资料", type = Type.String, name = "shape")
+	@URLParam(defaultValue = "", explain = "学历，默认则不限", type = Type.String, name = "edu")
 	@URLParam(defaultValue = "", explain = "体型，默认则不限", type = Type.String, name = "shape")
 	@URLParam(defaultValue = "", explain = "满意部位，,默认则不限", type = Type.String, name = "part")
 	//@URLParam(defaultValue = "{轻奢，高奢，中等}", explain = "幸福期望,默认则不限", type = Type.String, name = "hope")
@@ -285,20 +287,26 @@ public class Home extends Controller implements Serializable {
 			return;
 		}
 		String city = getPara("city", "不限");
-		String distance_from = getPara("distance_from", "不限");
-		String distance_to = getPara("distance_to", "不限");
+		System.out.println(city);
+		String distance = getPara("distance", "不限");
+		String is_video = getPara("is_video","不限");
+		String weigth_from = getPara("weigth_from","不限");
+		String weight_to = getPara("weight_to", "不限");
 		String age_from = getPara("age_from", "不限");
 		String age_to = getPara("age_to", "不限");
 		String height_from = getPara("height_from", "不限");
 		String height_to = getPara("height_to", "不限");
-		String hope = getPara("hope", "不限");
 		String user_latitude = getPara("latitude", "30.344");
 		String user_longitude = getPara("longitude", "120.00");
 		String shape = getPara("shape", "不限");
+		String part_id = getPara("part_id","不限");
+		String sex = getPara("sex","不限");
+		String edu = getPara("edu","不限");
+		String part = getPara("part","不限");
 
 		String filter_sql = " setting_emotion=1 and status=1 and black_status=0 ";
-
-		int status = 0;
+		
+		/*int status = 0;
 		String message = "";
 		int setting_telecontact = 0;
 		int taste = 0;// 0-甜心宝贝
@@ -312,8 +320,8 @@ public class Home extends Controller implements Serializable {
 				taste = 0;
 			}
 			setting_telecontact = user.get(user.setting_telecontact);
-		}
-		filter_sql = filter_sql + " and sex=" + taste;
+		}*/
+		filter_sql = filter_sql + " and sex=" + sex;
 		if (!"不限".equals(city)) {
 			filter_sql = filter_sql + " and city='" + city+"'";
 		}
@@ -323,6 +331,15 @@ public class Home extends Controller implements Serializable {
 		//if (!"不限".equals(distance_to)) {
 		//	filter_sql = filter_sql + " and distance <= " + distance_from;
 		//}
+		if (!"不限".equals(is_video)) {
+			filter_sql = filter_sql + " and is_video='" + is_video+"'";
+		}
+		if (!"不限".equals(weigth_from)) {
+			filter_sql = filter_sql + " and weigth >= " + weigth_from;
+		}
+		if (!"不限".equals(weight_to)) {
+			filter_sql = filter_sql + " and weigth <= " + weight_to;
+		}
 		if (!"不限".equals(height_from)) {
 			filter_sql = filter_sql + " and height >= " + height_from;
 		}
@@ -334,6 +351,9 @@ public class Home extends Controller implements Serializable {
 		}
 		if (!"不限".equals(age_to)) {
 			filter_sql = filter_sql + " and TIMESTAMPDIFF(Year,birthday,'"+DateUtils.getCurrentDate()+"') <= " + age_to;
+		}
+		if (!"不限".equals(edu)) {
+			filter_sql = filter_sql + " and edu='" + edu+"'";
 		}
 		if (!"不限".equals(shape)) {
 			filter_sql = filter_sql + " and shape='" + shape+"'";

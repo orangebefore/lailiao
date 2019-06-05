@@ -25,6 +25,8 @@ public class User extends Model<User>{
     public static final String job="columnName=job,remarks=职业,dataType=String,defaultValue=";
 
     public static final String height="columnName=height,remarks=身高,dataType=String,defaultValue=165CM";
+    
+    public static final String weight="columnName=weight,remarks=体重,dataType=String,defaultValue=";
 
     public static final String sex="columnName=sex,remarks=性别：0-女，1-男,dataType=int,defaultValue=1";
 
@@ -116,7 +118,7 @@ public class User extends Model<User>{
     
     public static final String is_house="columnName=is_house,remarks=房产认证状态,dataType=String,defaultValue=no";
     
-
+    public static final String date_id="columnName=date_id,remarks=偏爱约会方式,dataType=String,defaultValue=";
 		
 	
 }
