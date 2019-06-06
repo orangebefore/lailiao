@@ -20,7 +20,7 @@ public class Certification extends Model<Certification>{
 
     public static final String house_url="columnName=house_url,remarks=房产证,dataType=String,defaultValue=null";
 
-    public static final String schooling_url="columnName=schooling_url,remarks=学历证,dataType=String,defaultValue=null";
+    public static final String edu_url="columnName=edu_url,remarks=学历证,dataType=String,defaultValue=null";
 
     public static final String is_heart="columnName=is_heart,remarks=个性签名,dataType=String,defaultValue=null";
 

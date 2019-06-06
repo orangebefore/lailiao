@@ -68,7 +68,7 @@ public class HouseAudit extends Controller {
 		if( house_status == 3){
 			giftPage = Audit.dao.paginate(currentPage, PAGE_SIZE,"select * ","FROM certification,user where 1=1 AND certification.user_id = user.user_id order by id asc");
 		}else if(house_status == 2) {
-			giftPage = Audit.dao.paginate(currentPage, PAGE_SIZE,"select * ","FROM certification,user WHERE house_status=2 AND certification.user_id = user.user_id order by id asc");
+			giftPage = Audit.dao.paginate(currentPage, PAGE_SIZE,"select * ","FROM certification,user WHERE house_status=2 AND certification.user_id = user.user_id AND house_url is not null order by id asc");
 		}else {
 			giftPage = Audit.dao.paginate(currentPage, PAGE_SIZE,"select * ","FROM certification,user WHERE house_status="+house_status+" AND certification.user_id = user.user_id order by id asc");
 		}
