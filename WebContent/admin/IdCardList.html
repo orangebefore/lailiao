@@ -166,6 +166,7 @@
 													<th>身份证正面</th>
 													<th>身份证反面</th>
 													<th>未通过理由</th>
+													<th>审核状态</th>
 													<th>操作</th>
 												</tr>
 											</thead>
@@ -188,7 +189,12 @@
 				                                    <td>
 						                                ${(r.id_card_reason)!''}
 				                                    </td>
-				                                    
+				                                    <td>
+				                                        <#if r.id_card_status=2>待审核
+				                                        <#elseif r.id_card_status=1>审核通过
+				                                        <#else>未通过审核
+				                                        </#if>
+													</td>
 													<td>
 														<a class="btn btn-xs btn-success" onclick="return confirm('确定通过?');" href="/admin/IdCards/modifyIsCard?user_id=${(r.user_id)!''}&id_card_status=${id_card_status}&pn=${pn}&flag=true&id=${(r.id)!''}" data-rel="tooltip" data-placement="left" title="通过">
 															<i class="icon-ok bigger-90"></i></a>

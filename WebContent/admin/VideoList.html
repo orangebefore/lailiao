@@ -165,6 +165,7 @@
 													<th>认证用户</th>
 													<th>认证视频</th>
 													<th>未通过理由</th>
+													<th>审核状态</th>
 													<th>操作</th>
 												</tr>
 											</thead>
@@ -184,6 +185,12 @@
 													<td>
 						                                ${(r.video_reason)!''}
 				                                    </td>
+				                                    <td>
+				                                        <#if r.video_status=2>待审核
+				                                        <#elseif r.video_status=1>审核通过
+				                                        <#else>未通过审核
+				                                        </#if>
+													</td>
 													<td>
 														<a class="btn btn-xs btn-success" onclick="return confirm('确定通过?');" href="/admin/Videos/modifyIsVideo?user_id=${(r.user_id)!''}&video_status=${video_status}&pn=${pn}&flag=1&id=${(r.id)!''}" data-rel="tooltip" data-placement="left" title="通过">
 															<i class="icon-ok bigger-90"></i></a>
