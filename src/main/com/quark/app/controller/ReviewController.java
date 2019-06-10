@@ -4,6 +4,14 @@ import java.io.Serializable;
 
 import com.jfinal.core.Controller;
 import com.jfinal.upload.UploadFile;
+import com.quark.api.annotation.Author;
+import com.quark.api.annotation.DataType;
+import com.quark.api.annotation.Explaination;
+import com.quark.api.annotation.ReturnOutlet;
+import com.quark.api.annotation.Rp;
+import com.quark.api.annotation.Type;
+import com.quark.api.annotation.URLParam;
+import com.quark.api.annotation.Value;
 import com.quark.api.auto.bean.ResponseValues;
 import com.quark.app.logs.AppLog;
 import com.quark.common.AppData;
@@ -12,6 +20,8 @@ import com.quark.interceptor.AppToken;
 import com.quark.model.extend.Audit;
 import com.quark.model.extend.Certification;
 import com.quark.model.extend.SuperstarPrice;
+import com.quark.model.extend.Tokens;
+import com.quark.model.extend.User;
 import com.quark.utils.DateUtils;
 import com.quark.utils.FileUtils;
 
@@ -28,7 +38,15 @@ public class ReviewController extends Controller implements Serializable{
 		}
 		
 				
-		//视频认证
+		@Author("chen")
+		@Rp("认证中心")
+		@Explaination(info = "视频认证")
+		@URLParam(defaultValue = "", explain = Value.Infer, type = Type.String, name = Tokens.token)
+		@URLParam(defaultValue = "", explain = Value.Infer, type = Type.File, name = Certification.video_url)
+		@ReturnOutlet(name = "ReviewResponse{message}", remarks = "message", dataType = DataType.String, defaultValue = "")
+		@ReturnOutlet(name = "ReviewResponse{user:token}", remarks = "token", dataType = DataType.String, defaultValue = "")
+		@ReturnOutlet(name = "ReviewResponse{status}", remarks = "1-申请成功，2-申请失败", dataType = DataType.Int, defaultValue = "")
+		@ReturnOutlet(name = "ReviewResponse{code}", remarks = "200-正常返回，405-重新登陆", dataType = DataType.Int, defaultValue = "")
 		public void saveVideo() {
 				try {
 				String token = getPara("token");
@@ -38,8 +56,8 @@ public class ReviewController extends Controller implements Serializable{
 							Thread.currentThread().getStackTrace()[1].getMethodName());
 					response2.put("message", "请重新登陆");
 					response2.put("code", 405);
-					setAttr("SweetsResponse", response2);
-					renderMultiJson("SweetsResponse");
+					setAttr("ReviewResponse", response2);
+					renderMultiJson("ReviewResponse");
 					return;
 				}
 				boolean save = false;
@@ -75,11 +93,20 @@ public class ReviewController extends Controller implements Serializable{
 				AppLog.error(e, getRequest());
 			} finally {
 				AppLog.info("", getRequest());
+				
 			}
 		}
 		
-		
-		//身份证认证
+		@Author("chen")
+		@Rp("认证中心")
+		@Explaination(info = "身份认证")
+		@URLParam(defaultValue = "", explain = Value.Infer, type = Type.String, name = Tokens.token)
+		@URLParam(defaultValue = "", explain = Value.Infer, type = Type.File, name = Certification.id_card_up)
+		@URLParam(defaultValue = "", explain = Value.Infer, type = Type.File, name = Certification.id_card_down)
+		@ReturnOutlet(name = "ReviewResponse{message}", remarks = "message", dataType = DataType.String, defaultValue = "")
+		@ReturnOutlet(name = "ReviewResponse{user:token}", remarks = "token", dataType = DataType.String, defaultValue = "")
+		@ReturnOutlet(name = "ReviewResponse{status}", remarks = "1-申请成功，2-申请失败", dataType = DataType.Int, defaultValue = "")
+		@ReturnOutlet(name = "ReviewResponse{code}", remarks = "200-正常返回，405-重新登陆", dataType = DataType.Int, defaultValue = "")
 		public void saveIdCard() {
 			try {
 				String token = getPara("token");
@@ -123,7 +150,6 @@ public class ReviewController extends Controller implements Serializable{
 				responseValues.put("code", 200);
 				setAttr("ReviewResponse", responseValues);
 				renderMultiJson("ReviewResponse");
-				AppLog.info("", getRequest());
 			} catch (Exception e) {
 				AppLog.error(e, getRequest());
 			} finally {
@@ -131,7 +157,15 @@ public class ReviewController extends Controller implements Serializable{
 			}
 		}
 		
-		//房产认证
+		@Author("chen")
+		@Rp("认证中心")
+		@Explaination(info = "房产认证")
+		@URLParam(defaultValue = "", explain = Value.Infer, type = Type.String, name = Tokens.token)
+		@URLParam(defaultValue = "", explain = Value.Infer, type = Type.File, name = Certification.house_url)
+		@ReturnOutlet(name = "ReviewResponse{message}", remarks = "message", dataType = DataType.String, defaultValue = "")
+		@ReturnOutlet(name = "ReviewResponse{user:token}", remarks = "token", dataType = DataType.String, defaultValue = "")
+		@ReturnOutlet(name = "ReviewResponse{status}", remarks = "1-申请成功，2-申请失败", dataType = DataType.Int, defaultValue = "")
+		@ReturnOutlet(name = "ReviewResponse{code}", remarks = "200-正常返回，405-重新登陆", dataType = DataType.Int, defaultValue = "")
 		public void saveHouse() {
 			String token;
 			ResponseValues response2;
@@ -180,7 +214,15 @@ public class ReviewController extends Controller implements Serializable{
 			}
 		}
 		
-		//学历认证
+		@Author("chen")
+		@Rp("认证中心")
+		@Explaination(info = "学历认证")
+		@URLParam(defaultValue = "", explain = Value.Infer, type = Type.String, name = Tokens.token)
+		@URLParam(defaultValue = "", explain = Value.Infer, type = Type.File, name = Certification.edu_url)
+		@ReturnOutlet(name = "ReviewResponse{message}", remarks = "message", dataType = DataType.String, defaultValue = "")
+		@ReturnOutlet(name = "ReviewResponse{user:token}", remarks = "token", dataType = DataType.String, defaultValue = "")
+		@ReturnOutlet(name = "ReviewResponse{status}", remarks = "1-申请成功，2-申请失败", dataType = DataType.Int, defaultValue = "")
+		@ReturnOutlet(name = "ReviewResponse{code}", remarks = "200-正常返回，405-重新登陆", dataType = DataType.Int, defaultValue = "")
 		public void saveEdu() {
 			String token;
 			ResponseValues response2;
@@ -228,7 +270,7 @@ public class ReviewController extends Controller implements Serializable{
 			}
 		}
 		
-		//汽车认证
+		//个性签名认证
 		public void saveHeart() {
 			
 		}		

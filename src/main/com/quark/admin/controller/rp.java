@@ -91,7 +91,6 @@ public class rp extends Controller {
 			// }
 			// }
 			List<ApiDescription> list = new ArrayList<ApiDescription>();
-			System.out.println(name);
 			List<ApiDescription> apiList = BuildAPI.getApisOfRp().get(name);
 			if (apiList != null) {
 				for (ApiDescription api : apiList) {

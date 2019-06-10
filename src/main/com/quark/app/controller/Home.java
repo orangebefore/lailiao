@@ -61,8 +61,6 @@ public class Home extends Controller implements Serializable {
 	@URLParam(defaultValue = "5", explain = Value.Infer, type = Type.String, name = "page_size")
 	@URLParam(defaultValue = "", explain = Value.Infer, type = Type.String, name = "latitude")
 	@URLParam(defaultValue = "", explain = Value.Infer, type = Type.String, name = "longitude")
-
-
 	// 返回信息
 	// page property
 	@ReturnOutlet(name = "SweetsResponse{SweetsResult:sweets:pageNumber}", remarks = "page number", dataType = DataType.Int, defaultValue = "")

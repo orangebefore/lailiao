@@ -12,5 +12,5 @@ public class UserExpect extends Model<UserExpect>{
 
     public static final String create_time="columnName=create_time,remarks=上传时间,dataType=String,defaultValue=null";
 
-    public static final String expect_gender="columnName=expect_gender,remarks=0-女，1-男,dataType=int,defaultValue=0";
+    public static final String expect_gender="columnName=expect_gender,remarks=0-女，1-男,2-通用,dataType=int,defaultValue=0";
 }

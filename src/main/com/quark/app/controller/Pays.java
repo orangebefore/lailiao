@@ -41,6 +41,7 @@ import com.quark.common.AppData;
 import com.quark.common.OrderUtils;
 import com.quark.interceptor.AppToken;
 import com.quark.model.extend.Charge;
+import com.quark.model.extend.ChargeAudit;
 import com.quark.model.extend.Gift;
 import com.quark.model.extend.GoldPrice;
 import com.quark.model.extend.Notices;
@@ -272,9 +273,87 @@ public class Pays extends Controller {
 	@Author("C罗")
 	@Rp("支付")
 	@Explaination(info = "银联支付异步通知")
-	@UpdateLog(date = "2015-11-05 11:12", log = "初次添加")
+	@UpdateLog(date = "2019-06-10 10:12", log = "初次添加")
 	@URLParam(defaultValue = "", explain = Value.Infer, type = Type.String, name = "out_trade_no")
 	@ReturnJson("{'CommitProjectResponse':{'status':1}}")
 	public void unionPayAysn() throws Exception {
+	}
+	
+	@Author("cluo")
+	@Rp("支付")
+	@Explaination(info = "购买认证")
+	@UpdateLog(date = "2019-06-10 10:12", log = "初次添加")
+	@URLParam(defaultValue = "", explain = Value.Infer, type = Type.String, name = Tokens.token)
+	@URLParam(defaultValue = "", explain = "天数", type = Type.String, name = "days")
+	@URLParam(defaultValue = "", explain = "用户ID", type = Type.String, name = "user_id")
+	@URLParam(defaultValue = "", explain = "认证价格", type = Type.String, name = "price")
+	@URLParam(defaultValue = "{app、h5}", explain = Value.Infer, type = Type.String, name = "invoke")
+
+	@ReturnOutlet(name = "PayVipResponse{charge_id}", remarks = "付款Id", dataType = DataType.String, defaultValue = "")
+	@ReturnOutlet(name = "PayVipResponse{pay_id}", remarks = "支付流水号", dataType = DataType.String, defaultValue = "")
+	@ReturnOutlet(name = "PayVipResponse{message}", remarks = "", dataType = DataType.String, defaultValue = "")
+	@ReturnOutlet(name = "PayVipResponse{status}", remarks = "", dataType = DataType.Int, defaultValue = "")
+	@ReturnOutlet(name = "PayVipResponse{code}", remarks = "200-正常返回，405-重新登陆", dataType = DataType.Int, defaultValue = "")
+	public void payAudit() throws Exception {
+		int pay_type = 1;//getParaToInt("pay_type", 1);
+		int days = getParaToInt("days", 0);
+		int user_id = getParaToInt("user_id", 0);
+		String price_str = getPara("price", "00");
+
+		String token = getPara("token", null);
+		
+		String message = "";
+		User user = User.dao.findById(user_id);
+		/**
+		 * log
+		 */
+		AppLog.info("购买-生成购买订单", getRequest());
+		/**
+		 * end
+		 */
+		BigDecimal money = new BigDecimal(price_str);
+		ChargeAudit cAudit = new ChargeAudit();
+		boolean save = cAudit.set(cAudit.user_id,user_id).set(cAudit.is_pay, "1").set(cAudit.charge_time, DateUtils.getCurrentDateTime())
+				.set(cAudit.money, money).set(cAudit.charge_month, DateUtils.getCurrentMonth())
+				.set("pay_type", 4).set(cAudit.charge_date, DateUtils.getCurrentDate())
+				.set(cAudit.charge_hour, DateUtils.getCurrentDateHours())
+				.save();
+		if (save) {
+			user.set(user.pay_car, 1).update();
+			int out_trade_no = cAudit.get("charge_audit_id");
+			if (pay_type == 1) {
+
+				// 实例化客户端
+				// 实例化具体API对应的request类,类名称和接口名称对应,当前调用接口名称：alipay.trade.app.pay
+				AlipayTradeAppPayRequest request = new AlipayTradeAppPayRequest();
+				// SDK已经封装掉了公共参数，这里只需要传入业务参数。以下方法为sdk的model入参方式(model和biz_content同时存在的情况下取biz_content)。
+				AlipayTradeAppPayModel model = new AlipayTradeAppPayModel();
+				model.setBody("支付订单号：" + out_trade_no);
+				model.setSubject("支付订单号：" + out_trade_no);
+				model.setOutTradeNo("" + out_trade_no);
+				model.setTimeoutExpress("30m");
+				model.setTotalAmount(money.toString());
+				model.setProductCode("QUICK_MSECURITY_PAY");
+				request.setBizModel(model);
+				request.setNotifyUrl(alipayConfig.notify_url);
+				try {
+					// 这里和普通的接口调用不同，使用的是sdkExecute
+					AlipayTradeAppPayResponse alipayTradeAppPayResponse = alipayClient.sdkExecute(request);
+					ResponseValues response = new ResponseValues(this,
+							Thread.currentThread().getStackTrace()[1].getMethodName());
+					response.put("ALIPAY_APP_SELLER", alipayConfig.APP_SELLER);
+					response.put("ALIPAY_APP_ID", alipayConfig.APP_ID);
+					response.put("ALIPAY_APP_PRIVATE_KEY", alipayConfig.APP_PRIVATE_KEY);
+					response.put("ALIPAY_PUBLIC_KEY", alipayConfig.ALIPAY_PUBLIC_KEY);
+					response.put("out_trade_no",out_trade_no);
+					setAttr("PayResponse", response);
+					renderMultiJson("PayResponse");
+				} catch (AlipayApiException e) {
+					e.printStackTrace();
+				}
+
+			}
+		}
+
 	}
 }

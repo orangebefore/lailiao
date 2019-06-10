@@ -1,6 +1,8 @@
 package com.quark.model.extend;
 import com.jfinal.plugin.activerecord.Model;
 
+import javassist.tools.framedump;
+
 /**
 * @author cluo
 * 
@@ -118,7 +120,14 @@ public class User extends Model<User>{
     
     public static final String is_house="columnName=is_house,remarks=房产认证状态,dataType=String,defaultValue=no";
     
-    public static final String date_id="columnName=date_id,remarks=偏爱约会方式,dataType=String,defaultValue=";
+    public static final String date_id="columnName=date_id,remarks=偏爱约会方式,dataType=int,defaultValue=";
+    
+    public static final String pay_car="columnName=pay_car,remarks=汽车认证购买,dataType=int,defaultValue=0";
+    
+    public static final String pay_house="columnName=pay_house,remarks=汽车认证购买,dataType=int,defaultValue=0";
+
+		
+	}
 		
 	
-}
+

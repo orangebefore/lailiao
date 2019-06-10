@@ -1,0 +1,141 @@
+﻿body {
+  margin:0px;
+  background-image:none;
+  position:static;
+  left:auto;
+  width:744px;
+  margin-left:0;
+  margin-right:0;
+  text-align:left;
+}
+#base {
+  position:absolute;
+  z-index:0;
+}
+#u0 {
+  position:absolute;
+  left:0px;
+  top:0px;
+  width:410px;
+  height:836px;
+}
+#u0_img {
+  position:absolute;
+  left:0px;
+  top:0px;
+  width:410px;
+  height:836px;
+}
+#u1 {
+  position:absolute;
+  left:2px;
+  top:410px;
+  width:406px;
+  visibility:hidden;
+  word-wrap:break-word;
+}
+#u2 {
+  position:absolute;
+  left:40px;
+  top:113px;
+  width:334px;
+  height:592px;
+}
+#u2_img {
+  position:absolute;
+  left:0px;
+  top:0px;
+  width:334px;
+  height:592px;
+}
+#u3 {
+  position:absolute;
+  left:2px;
+  top:288px;
+  width:330px;
+  visibility:hidden;
+  word-wrap:break-word;
+}
+#u4 {
+  position:absolute;
+  left:410px;
+  top:520px;
+  width:200px;
+  height:100px;
+}
+#u4_img {
+  position:absolute;
+  left:0px;
+  top:0px;
+  width:200px;
+  height:100px;
+}
+#u5 {
+  position:absolute;
+  left:2px;
+  top:34px;
+  width:196px;
+  word-wrap:break-word;
+}
+#u6 {
+  position:absolute;
+  left:40px;
+  top:130px;
+  width:50px;
+  height:50px;
+  overflow:hidden;
+  background-image:url('../../resources/images/transparent.gif');
+}
+#u7 {
+  position:absolute;
+  left:47px;
+  top:630px;
+  width:320px;
+  height:50px;
+  overflow:hidden;
+  background-image:url('../../resources/images/transparent.gif');
+}
+#u8 {
+  position:absolute;
+  left:52px;
+  top:139px;
+  width:26px;
+  height:32px;
+}
+#u8_img {
+  position:absolute;
+  left:0px;
+  top:0px;
+  width:26px;
+  height:32px;
+}
+#u9 {
+  position:absolute;
+  left:2px;
+  top:8px;
+  width:22px;
+  visibility:hidden;
+  word-wrap:break-word;
+}
+#u10 {
+  position:absolute;
+  left:9px;
+  top:344px;
+  width:735px;
+  height:284px;
+}
+#u10_img {
+  position:absolute;
+  left:0px;
+  top:0px;
+  width:735px;
+  height:284px;
+}
+#u11 {
+  position:absolute;
+  left:2px;
+  top:134px;
+  width:731px;
+  visibility:hidden;
+  word-wrap:break-word;
+}

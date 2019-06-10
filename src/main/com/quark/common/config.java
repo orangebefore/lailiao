@@ -30,6 +30,7 @@ import com.quark.model.extend.CarClassify;
 import com.quark.model.extend.CellPhone;
 import com.quark.model.extend.Certification;
 import com.quark.model.extend.Charge;
+import com.quark.model.extend.ChargeAudit;
 import com.quark.model.extend.ChargeGold;
 import com.quark.model.extend.Collection;
 import com.quark.model.extend.Constellation;
@@ -37,6 +38,10 @@ import com.quark.model.extend.Gift;
 import com.quark.model.extend.GoldPrice;
 import com.quark.model.extend.Interest;
 import com.quark.model.extend.InvitationPriceEntity;
+import com.quark.model.extend.Invite;
+import com.quark.model.extend.InviteCost;
+import com.quark.model.extend.InviteTime;
+import com.quark.model.extend.InviteType;
 import com.quark.model.extend.Job;
 import com.quark.model.extend.LikeDate;
 import com.quark.model.extend.LoveYu;
@@ -54,6 +59,8 @@ import com.quark.model.extend.Tag;
 import com.quark.model.extend.Tokens;
 import com.quark.model.extend.TongjiCharge;
 import com.quark.model.extend.TongjiRegist;
+import com.quark.model.extend.TravelDays;
+import com.quark.model.extend.TravelMode;
 import com.quark.model.extend.User;
 import com.quark.model.extend.UserExpect;
 import com.quark.model.extend.UserIncome;
@@ -241,6 +248,13 @@ public class config extends JFinalConfig {
 		arp.addMapping("user_expect", "expect_id",UserExpect.class);
 		arp.addMapping("invitation_price", "ip_id",InvitationPriceEntity.class);
 		arp.addMapping("superstar_price", "sp_id",SuperstarPrice.class);
+		arp.addMapping("charge_audit", "charge_audit_id",ChargeAudit.class);
+		arp.addMapping("invite", "invite_id",Invite.class);
+		arp.addMapping("invite_cost", "cost_id",InviteCost.class);
+		arp.addMapping("invite_time", "time_id",InviteTime.class);
+		arp.addMapping("invite_type", "invite_type",InviteType.class);
+		arp.addMapping("travel_days", "travel_days_id",TravelDays.class);
+		arp.addMapping("travel_mode", "travel_mode_id",TravelMode.class);
 
 
 		/**
