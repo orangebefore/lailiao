@@ -23,9 +23,9 @@ public class Invite extends Model<Invite>{
 
     public static final String invite_sex="columnName=invite_sex,remarks=邀约性别 0-男 1-女 2-不限,dataType=int,defaultValue=null";
     
-    public static final String cost_id="columnName=invite_sex,remarks=邀约性别 0-男 1-女 2-不限,dataType=int,defaultValue=null";
+    public static final String cost_id="columnName=cost_id,remarks=邀约费用id,dataType=int,defaultValue=null";
 
-    public static final String invite_receive="columnName=invite_receiveremarks=是否由我接送 0-是 1-不是,dataType=int,defaultValue=null";
+    public static final String invite_receive="columnName=invite_receive,remarks=是否由我接送 0-是 1-不是,dataType=int,defaultValue=null";
 
     public static final String invite_explain="columnName=invite_explain,remarks=邀约说明,dataType=String,defaultValue=null";
 
@@ -39,7 +39,7 @@ public class Invite extends Model<Invite>{
 
     public static final String is_carry_bestie="columnName=is_carry_bestie,remarks=是否可以携带闺蜜,dataType=int,defaultValue=null";
 
-    public static final String user_id="columnName=用户id,remarks=用户id,dataType=int,defaultValue=null";
+    public static final String user_id="columnName=user_id,remarks=用户id,dataType=int,defaultValue=null";
     
     public static final String is_top="columnName=is_top,remarks=是否置顶,dataType=int,defaultValue=null";
 

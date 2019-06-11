@@ -160,6 +160,7 @@
 													<th class="center">序号</th>
 													<th>用户昵称</th>
 													<th>驾驶证</th>
+													<th>汽车名称</th>
 													<th>审核状态</th>
 													<th>不通过理由</th>
 													<th>审核</th>
@@ -176,6 +177,7 @@
 						                                	<img alt="" style="width:160px;height:160px;"  src="/files/image?name=${(r.drivers)!''}">
 						                               	</div>
 				                                    </td>
+				                                    <td>${(r.car_name)!''}</td>
 													<td>
 				                                        <#if r.car_status=2>待审核
 				                                        <#elseif r.car_status=1>审核通过

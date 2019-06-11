@@ -7,17 +7,56 @@ import java.util.List;
 import com.jfinal.core.Controller;
 import com.quark.api.auto.bean.ResponseValues;
 import com.quark.app.logs.AppLog;
+import com.quark.common.AppData;
 import com.quark.interceptor.AppToken;
+import com.quark.model.extend.Invite;
 import com.quark.model.extend.InviteCost;
 import com.quark.model.extend.InviteTime;
 import com.quark.model.extend.TravelDays;
 import com.quark.model.extend.TravelMode;
+import com.quark.model.extend.User;
 
 public class InviteController extends Controller{
 
 	
 	public void list() {
-		
+		try {
+			String token = getPara("token");
+			if (!AppToken.check(token, this)) {
+				// 登陆失败
+				ResponseValues response2 = new ResponseValues(this,
+						Thread.currentThread().getStackTrace()[1].getMethodName());
+				response2.put("message", "请重新登陆");
+				response2.put("code", 405);
+				setAttr("InviteResponse", response2);
+				renderMultiJson("InviteResponse");
+				return;
+			}
+			int status = 0;
+			String message="";
+			String user_id = AppToken.getUserId(token, this);
+			User user = User.dao.findById(user_id);
+			String latitude =user.get("latitude");
+			String longitude =user.get("longitude");
+			final List<Invite> iList = Invite.dao.find("select invite_type_id,invite_content,cost_id,invite_explain,is_top,invite_place from invite order by is_top asc");
+			ResponseValues response = new ResponseValues(this,
+					Thread.currentThread().getStackTrace()[1].getMethodName());
+			response.put("message", "");
+			response.put("status", 1);
+			response.put("code", 200);
+			response.put("Result", new HashMap<String, Object>() {
+				{
+					put("iList", iList);
+				}
+			});
+			setAttr("InviteResponse", response);
+			renderMultiJson("InviteResponse");
+			AppLog.info(null, getRequest());
+		} catch (Exception e) {
+			AppLog.error(e, getRequest());
+		} finally {
+			AppData.analyze("InviteController/list", "邀约列表", this);
+		}
 	}
 	
 	public void saveTravel() {

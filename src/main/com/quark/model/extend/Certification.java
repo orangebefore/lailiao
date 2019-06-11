@@ -35,5 +35,11 @@ public class Certification extends Model<Certification>{
     public static final String video_reason="columnName=video_reason,remarks=视频审核未通过理由,dataType=String,defaultValue=null";
 
     public static final String car_status="columnName=car_status,remarks=汽车认证状态:0待审核1审核通过2未通过审核,dataType=int,defaultValue=0";
+    
+    public static final String car_name="columnName=car_name,remarks=汽车认证名称,dataType=String,defaultValue=null";
+    
+    public static final String car_reason="columnName=car_reason,remarks=汽车审核未通过理由,dataType=String,defaultValue=null";
 
+		
 }
+

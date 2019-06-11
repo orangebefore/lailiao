@@ -1,6 +1,7 @@
 package com.quark.app.controller;
 
 import java.io.Serializable;
+import java.util.List;
 
 import com.jfinal.core.Controller;
 import com.jfinal.upload.UploadFile;
@@ -18,6 +19,8 @@ import com.quark.common.AppData;
 import com.quark.common.config;
 import com.quark.interceptor.AppToken;
 import com.quark.model.extend.Audit;
+import com.quark.model.extend.CarCategroy;
+import com.quark.model.extend.CarClassify;
 import com.quark.model.extend.Certification;
 import com.quark.model.extend.SuperstarPrice;
 import com.quark.model.extend.Tokens;
@@ -32,8 +35,114 @@ import com.quark.utils.FileUtils;
  */
 public class ReviewController extends Controller implements Serializable{
 	
+	
+		public void findCategroy(){
+			try {
+				String token = getPara("token");
+				if (!AppToken.check(token, this)) {
+					// 登陆失败
+					ResponseValues response2 = new ResponseValues(this,
+							Thread.currentThread().getStackTrace()[1].getMethodName());
+					response2.put("message", "请重新登陆");
+					response2.put("code", 405);
+					setAttr("GiftsResponse", response2);
+					renderMultiJson("GiftsResponse");
+					return;
+				}
+				CarCategroy carCategroy = new CarCategroy();
+				List<CarCategroy> categroys = carCategroy.find("select id,car_url,type,type_name from car_categroy");
+				ResponseValues responseValues = new ResponseValues(this, Thread.currentThread().getStackTrace()[1].getMethodName());
+				responseValues.put("code", 200);
+				responseValues.put("list", categroys);
+				setAttr("ReviewResponse", responseValues);
+				renderMultiJson("ReviewResponse");
+			} catch (Exception e) {
+				AppLog.error(e, getRequest());
+			} finally {
+				AppData.analyze("ReviewController/findCategroy", "汽车品牌列表", this);
+			}
+		}
+		
+
+		public void findCarClassify(){
+			try {
+				String token = getPara("token");
+				if (!AppToken.check(token, this)) {
+					// 登陆失败
+					ResponseValues response2 = new ResponseValues(this,
+							Thread.currentThread().getStackTrace()[1].getMethodName());
+					response2.put("message", "请重新登陆");
+					response2.put("code", 405);
+					setAttr("GiftsResponse", response2);
+					renderMultiJson("GiftsResponse");
+					return;
+				}
+			int categroy_id = getParaToInt("categroy_id");
+			System.out.println(categroy_id);
+			CarClassify classify = new CarClassify();
+			List<CarClassify> carClassifies = classify.find("select categroy_id,car_name,car_url from car_classify where categroy_id="+categroy_id);
+			ResponseValues responseValues = new ResponseValues(this, Thread.currentThread().getStackTrace()[1].getMethodName());
+			responseValues.put("code", 200);
+			responseValues.put("list", carClassifies);
+			setAttr("ReviewResponse", responseValues);
+			renderMultiJson("ReviewResponse");
+			} catch (Exception e) {
+				AppLog.error(e, getRequest());
+			} finally {
+				AppData.analyze("ReviewController/findCarClassify", "汽车详情列表", this);
+			}
+		}
+	
 		//汽车认证
 		public void saveCar() {
+			try {
+				String token = getPara("token");
+				if (!AppToken.check(token, this)) {
+					// 登陆失败
+					ResponseValues response2 = new ResponseValues(this,
+							Thread.currentThread().getStackTrace()[1].getMethodName());
+					response2.put("message", "请重新登陆");
+					response2.put("code", 405);
+					setAttr("GiftsResponse", response2);
+					renderMultiJson("GiftsResponse");
+					return;
+				}
+			String car_name = getPara("car_name");
+			boolean save = false;
+			String message = "";
+			UploadFile upload_cover = getFile("drivers", config.images_path);
+			String user_id = AppToken.getUserId(token, this);
+			Certification certification = new Certification();
+			certification = Certification.dao.findFirst("select * from certification where user_id = " + user_id);
+			//判断用户是否有审核申请记录
+			if(certification!=null) {
+				save = certification.set(certification.drivers, FileUtils.renameToFile(upload_cover))
+						.set(certification.car_status, 2)
+						.set(certification.car_reason, "").update();
+			} else {
+				save = certification.set(certification.user_id, user_id)
+						.set(certification.drivers, FileUtils.renameToFile(upload_cover))
+						.save();
+			}
+			ResponseValues responseValues = new ResponseValues(this, Thread.currentThread().getStackTrace()[1].getMethodName());
+			//判断审核是否提交成功
+			if(save) {
+				responseValues.put("status", 1);
+				message = "申请成功";
+			} else {
+				responseValues.put("status", 0);
+				message = "申请失败";
+			}
+			responseValues.put("message", message);
+			responseValues.put("code", 200);
+			setAttr("ReviewResponse", responseValues);
+			renderMultiJson("ReviewResponse");
+			} catch (Exception e) {
+				AppLog.error(e, getRequest());
+			} finally {
+				AppData.analyze("ReviewController/saveCar", "汽车审核", this);
+			}
+			
 			
 		}
 		
