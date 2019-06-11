@@ -63,17 +63,175 @@ public class InviteController extends Controller{
 	}
 	
 	public void saveTravel() {
-		
+		try {
+			boolean save = false;
+			String message = "";
+			UploadFile explain_url = getFile("explain_url",config.images_path);
+			int cost_id = getParaToInt("cost_id");
+			String token = getPara("token");
+			if (!AppToken.check(token, this)) {
+				// 登陆失败
+				ResponseValues response2 = new ResponseValues(this,
+						Thread.currentThread().getStackTrace()[1].getMethodName());
+				response2.put("message", "请重新登陆");
+				response2.put("code", 405);
+				setAttr("InviteResponse", response2);
+				renderMultiJson("InviteResponse");
+				return;
+			}
+			String user_id = AppToken.getUserId(token, this);
+			int invite_sex = getParaToInt("invite_sex");
+			String travel_days_id = getPara("travel_days_id");
+			String invite_content = getPara("invite_content");
+			String travel_mode_id = getPara("travel_mode_id");
+			String is_equal_place = getPara("is_equal_place");
+			String invite_explain = getPara("invite_explain");
+			int time_id = getParaToInt("time_id");
+			save = Invite.dao.set(Invite.explain_url, FileUtils.renameToFile(explain_url))
+					.set(Invite.travel_days_id, travel_days_id)
+					.set(Invite.travel_mode_id, travel_mode_id)
+					.set(Invite.invite_content, invite_content)
+					.set(Invite.invite_sex, invite_sex)
+					.set(Invite.invite_explain, invite_explain)
+					.set(Invite.is_equal_place, is_equal_place)
+					.set(Invite.cost_id, cost_id)
+					.set(Invite.time_id, time_id)
+					.set(Invite.invite_type_id, 1)
+					.set(Invite.user_id, user_id).save();
+			ResponseValues responseValues = new ResponseValues(this, Thread.currentThread().getStackTrace()[1].getMethodName());
+			if(save) {
+				responseValues.put("status", 1);
+				message = "发布成功";
+			}else {
+				responseValues.put("status", 0);
+				message = "发布失败";
+			}
+			responseValues.put("message",message);
+			responseValues.put("code", 200);
+			setAttr("InviteResponse", responseValues);
+			renderMultiJson("InviteResponse");
+			render("/app/InviteController/list");
+		} catch (Exception e) {
+			AppLog.error(e, getRequest());
+		} finally {
+			AppLog.info("", getRequest());
+		}
 	}
 	
 
 	public void saveFood() {
-		
+		try {
+			boolean save = false;
+			String message = "";
+			UploadFile explain_url = getFile("explain_url",config.images_path);
+			int cost_id = getParaToInt("cost_id");
+			String token = getPara("token");
+			if (!AppToken.check(token, this)) {
+				// 登陆失败
+				ResponseValues response2 = new ResponseValues(this,
+						Thread.currentThread().getStackTrace()[1].getMethodName());
+				response2.put("message", "请重新登陆");
+				response2.put("code", 405);
+				setAttr("InviteResponse", response2);
+				renderMultiJson("InviteResponse");
+				return;
+			}
+			String user_id = AppToken.getUserId(token, this);
+			String invite_province = getPara("invite_province");
+			String invite_content = getPara("invite_content");
+			String invite_city = getPara("invite_city");
+			String invite_place = getPara("invite_place");
+			int invite_sex = getParaToInt("invite_sex");
+			String invite_explain = getPara("invite_explain");
+			int invite_receive = getParaToInt("invite_receive");
+			int time_id = getParaToInt("time_id");
+			save = Invite.dao.set(Invite.explain_url, FileUtils.renameToFile(explain_url))
+					.set(Invite.invite_province, invite_province)
+					.set(Invite.invite_content, invite_content)
+					.set(Invite.invite_city, invite_city)
+					.set(Invite.invite_place, invite_place)
+					.set(Invite.invite_sex, invite_sex)
+					.set(Invite.invite_explain, invite_explain)
+					.set(Invite.cost_id, cost_id)
+					.set(Invite.invite_receive, invite_receive)
+					.set(Invite.time_id, time_id)
+					.set(Invite.invite_type_id, 2)
+					.set(Invite.user_id, user_id).save();
+			ResponseValues responseValues = new ResponseValues(this, Thread.currentThread().getStackTrace()[1].getMethodName());
+			if(save) {
+				responseValues.put("status", 1);
+				message = "发布成功";
+			}else {
+				responseValues.put("status", 0);
+				message = "发布失败";
+			}
+			responseValues.put("message",message);
+			responseValues.put("code", 200);
+			setAttr("InviteResponse", responseValues);
+			renderMultiJson("InviteResponse");
+			render("/app/InviteController/list");
+		} catch (Exception e) {
+			AppLog.error(e, getRequest());
+		} finally {
+			AppLog.info("", getRequest());
+		}
 	}
 	
 
 	public void saveSing() {
-		
+		try {
+			boolean save = false;
+			String message = "";
+			UploadFile explain_url = getFile("explain_url",config.images_path);
+			int cost_id = getParaToInt("cost_id");
+			String token = getPara("token");
+			if (!AppToken.check(token, this)) {
+				// 登陆失败
+				ResponseValues response2 = new ResponseValues(this,
+						Thread.currentThread().getStackTrace()[1].getMethodName());
+				response2.put("message", "请重新登陆");
+				response2.put("code", 405);
+				setAttr("InviteResponse", response2);
+				renderMultiJson("InviteResponse");
+				return;
+			}
+			String user_id = AppToken.getUserId(token, this);
+			String invite_province = getPara("invite_province");
+			String invite_city = getPara("invite_city");
+			String invite_place = getPara("invite_place");
+			int invite_sex = getParaToInt("invite_sex");
+			String invite_explain = getPara("invite_explain");
+			int invite_receive = getParaToInt("invite_receive");
+			int time_id = getParaToInt("time_id");
+			save = Invite.dao.set(Invite.explain_url, FileUtils.renameToFile(explain_url))
+					.set(Invite.invite_province, invite_province)
+					.set(Invite.invite_city, invite_city)
+					.set(Invite.invite_place, invite_place)
+					.set(Invite.invite_sex, invite_sex)
+					.set(Invite.invite_explain, invite_explain)
+					.set(Invite.cost_id, cost_id)
+					.set(Invite.invite_receive, invite_receive)
+					.set(Invite.time_id, time_id)
+					.set(Invite.invite_type_id, 3)
+					.set(Invite.user_id, user_id).save();
+			ResponseValues responseValues = new ResponseValues(this, Thread.currentThread().getStackTrace()[1].getMethodName());
+			if(save) {
+				responseValues.put("status", 1);
+				message = "发布成功";
+			}else {
+				responseValues.put("status", 0);
+				message = "发布失败";
+			}
+			responseValues.put("message",message);
+			responseValues.put("code", 200);
+			setAttr("InviteResponse", responseValues);
+			renderMultiJson("InviteResponse");
+			render("/app/InviteController/list");
+		} catch (Exception e) {
+			AppLog.error(e, getRequest());
+		} finally {
+			AppLog.info("", getRequest());
+		}
 	}
 	
 	
