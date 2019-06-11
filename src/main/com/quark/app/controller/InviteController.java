@@ -36,12 +36,23 @@ public class InviteController extends Controller{
 				return;
 			}
 			int status = 0;
+			String filter_sql = " where ";
+			String latitude = getPara("latitude", "30.344");
+			String longitude = getPara("longitude", "120.00");
+			String type = getPara("invite_type_id");
+			if (type == "" || type == null) {
+				filter_sql = filter_sql+" 1=1 ";
+			}else {
+				filter_sql = filter_sql+"invite_type_id ="+type;
+			}
 			String message="";
 			String user_id = AppToken.getUserId(token, this);
 			User user = User.dao.findById(user_id);
-			String latitude =user.get("latitude");
-			String longitude =user.get("longitude");
-			final List<Invite> iList = Invite.dao.find("select invite_type_id,invite_content,cost_id,invite_explain,is_top,invite_place from invite order by is_top asc");
+			final List<Invite> iList = Invite.dao.find("SELECT u.nickname,u.city,u.image_01,u.job,"
+					+ "u.birthday,u.height,i.invite_content,i.cost_id,i.invite_explain,i.is_top,i.invite_type_id,"
+					+ "ROUND(6378.138*2*ASIN(SQRT(POW(SIN(("+latitude+"*PI()/180-u.latitude*PI()/180)/2),2)+COS("+latitude+"*PI()/180)*COS(u.latitude*PI()/180)*POW"
+					+ "(SIN(("+longitude+"*PI()/180-u.longitude*PI()/180)/2),2)))*1000) AS distance"
+					+ " FROM `user` AS u INNER JOIN invite AS i ON u.`user_id` = i.`user_id` "+filter_sql+" ORDER BY i.`is_top` DESC");
 			ResponseValues response = new ResponseValues(this,
 					Thread.currentThread().getStackTrace()[1].getMethodName());
 			response.put("message", "");
@@ -49,7 +60,7 @@ public class InviteController extends Controller{
 			response.put("code", 200);
 			response.put("Result", new HashMap<String, Object>() {
 				{
-					put("iList", iList);
+					put("list", iList);
 				}
 			});
 			setAttr("InviteResponse", response);
@@ -456,6 +467,14 @@ public class InviteController extends Controller{
 		} finally {
 			AppLog.info("", getRequest());
 		}
+	}
+	//筛选
+	public void search(){
+		
+	}
+	//邀约详情
+	public void details() {
+		
 	}
 	
 }

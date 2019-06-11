@@ -285,7 +285,6 @@ public class Home extends Controller implements Serializable {
 			return;
 		}
 		String city = getPara("city", "不限");
-		System.out.println(city);
 		String distance = getPara("distance", "不限");
 		String is_video = getPara("is_video","不限");
 		String weigth_from = getPara("weigth_from","不限");
