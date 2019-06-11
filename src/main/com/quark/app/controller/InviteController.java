@@ -104,7 +104,7 @@ public class InviteController extends Controller{
 			String is_equal_place = getPara("is_equal_place");
 			String invite_explain = getPara("invite_explain");
 			int time_id = getParaToInt("time_id");
-			save = Invite.dao.set(Invite.explain_url, FileUtils.renameToFile(explain_url))
+			save = new Invite().set(Invite.explain_url, FileUtils.renameToFile(explain_url))
 					.set(Invite.travel_days_id, travel_days_id)
 					.set(Invite.travel_mode_id, travel_mode_id)
 					.set(Invite.invite_content, invite_content)
@@ -162,7 +162,7 @@ public class InviteController extends Controller{
 			String invite_explain = getPara("invite_explain");
 			int invite_receive = getParaToInt("invite_receive");
 			int time_id = getParaToInt("time_id");
-			save = Invite.dao.set(Invite.explain_url, FileUtils.renameToFile(explain_url))
+			save = new Invite().set(Invite.explain_url, FileUtils.renameToFile(explain_url))
 					.set(Invite.invite_province, invite_province)
 					.set(Invite.invite_content, invite_content)
 					.set(Invite.invite_city, invite_city)
@@ -220,7 +220,7 @@ public class InviteController extends Controller{
 			String invite_explain = getPara("invite_explain");
 			int invite_receive = getParaToInt("invite_receive");
 			int time_id = getParaToInt("time_id");
-			save = Invite.dao.set(Invite.explain_url, FileUtils.renameToFile(explain_url))
+			save = new Invite().set(Invite.explain_url, FileUtils.renameToFile(explain_url))
 					.set(Invite.invite_province, invite_province)
 					.set(Invite.invite_city, invite_city)
 					.set(Invite.invite_place, invite_place)
@@ -321,7 +321,7 @@ public class InviteController extends Controller{
 			String invite_explain = getPara("invite_explain");
 			int invite_receive = getParaToInt("invite_receive");
 			int time_id = getParaToInt("time_id");
-			save = Invite.dao.set(Invite.explain_url, FileUtils.renameToFile(explain_url))
+			save = new Invite().set(Invite.explain_url, FileUtils.renameToFile(explain_url))
 					.set(Invite.invite_content, invite_content)
 					.set(Invite.invite_province, invite_province)
 					.set(Invite.invite_city, invite_city)
@@ -382,7 +382,7 @@ public class InviteController extends Controller{
 			int is_carry_bestie = getParaToInt("is_carry_bestie");
 			int invite_receive = getParaToInt("invite_receive");
 			int time_id = getParaToInt("time_id");
-			save = Invite.dao.set(Invite.explain_url, FileUtils.renameToFile(explain_url))
+			save = new Invite().set(Invite.explain_url, FileUtils.renameToFile(explain_url))
 					.set(Invite.invite_content, invite_content)
 					.set(Invite.invite_province, invite_province)
 					.set(Invite.invite_city, invite_city)
@@ -442,11 +442,10 @@ public class InviteController extends Controller{
 			String invite_province = getPara("invite_province");
 			String invite_city = getPara("invite_city");			
 			int time_id = getParaToInt("time_id");
-			Invite invite =  new Invite();
-			save = invite.set(Invite.explain_url, FileUtils.renameToFile(explain_url))
-					.set(invite.invite_content, invite_content)
-					.set(invite.invite_province, invite_province)
-					.set(invite.invite_city, invite_city)
+			save = new Invite().set(Invite.explain_url, FileUtils.renameToFile(explain_url))
+					.set(Invite.invite_content, invite_content)
+					.set(Invite.invite_province, invite_province)
+					.set(Invite.invite_city, invite_city)
 					.set(Invite.invite_place, invite_place)
 					.set(Invite.invite_sex, invite_sex)
 					.set(Invite.invite_explain, invite_explain)
@@ -480,7 +479,50 @@ public class InviteController extends Controller{
 	}
 	//邀约详情
 	public void details() {
-		
+		String token;
+		ResponseValues response2;
+		boolean save = false;
+		try {
+			token = getPara("token");
+			if (!AppToken.check(token, this)) {
+				response2 = new ResponseValues(this, Thread.currentThread().getStackTrace()[1].getMethodName());
+				// 登陆失败
+				response2.put("message", "请重新登陆");
+				response2.put("code", 405);
+				setAttr("ReviewResponse", response2);
+				renderMultiJson("ReviewResponse");
+				return;
+			}
+			String filter_sql = " where ";
+			String latitude = getPara("latitude", "30.344");
+			String longitude = getPara("longitude", "120.00");
+			String invite_id = getPara("invite_id");
+			String user_id = AppToken.getUserId(token, this);
+//			final User user = User.dao.findFirst("select nickname,image_01,DATE_FORMAT(FROM_DAYS(TO_DAYS(NOW())-TO_DAYS(birthday)), '%Y')+0 AS age,"
+//					+ "ROUND(6378.138*2*ASIN(SQRT(POW(SIN(("+latitude+"*PI()/180-latitude*PI()/180)/2),2)+COS("+latitude+"*PI()/180)*COS(latitude*PI()/180)*POW"
+//					+ "(SIN(("+longitude+"*PI()/180-longitude*PI()/180)/2),2)))*1000) AS distance"
+//					+ " from user where user_id = " + user_id);
+			final List<Invite> iList = Invite.dao.find("SELECT u.nickname,u.image_01,u.hot,"
+					+ "i.*,"
+					+ "ROUND(6378.138*2*ASIN(SQRT(POW(SIN(("+latitude+"*PI()/180-u.latitude*PI()/180)/2),2)+COS("+latitude+"*PI()/180)*COS(u.latitude*PI()/180)*POW"
+					+ "(SIN(("+longitude+"*PI()/180-u.longitude*PI()/180)/2),2)))*1000) AS distance,DATE_FORMAT(FROM_DAYS(TO_DAYS(NOW())-TO_DAYS(birthday)), '%Y')+0 AS age"
+					+ " FROM `user` AS u INNER JOIN invite AS i ON u.`user_id` = i.`user_id` "+filter_sql+"i.invite_id="+invite_id+" ORDER BY i.`is_top` DESC");
+			System.out.println(user_id.toString());
+			ResponseValues responseValues = new ResponseValues(this, Thread.currentThread().getStackTrace()[1].getMethodName());
+			responseValues.put("code", 200);
+			responseValues.put("Result", new HashMap<String, Object>() {
+				{
+					put("detailsList", iList);
+				}
+			});
+			setAttr("InviteResponse", responseValues);
+			renderMultiJson("InviteResponse");
+		}
+		 catch (Exception e) {
+			AppLog.error(e, getRequest());
+		}finally{
+			AppLog.info("", getRequest());
+		}
 	}
 	
 }
