@@ -79,6 +79,72 @@ public class InviteController extends Controller{
 		}
 	}
 	
+	public void screenList() {
+		try {
+			boolean save = false;
+			String message = "";
+			String sex = getPara("sex");
+			String sort = getPara("sort");
+			int status = 0;
+			String token = getPara("token");
+			if (!AppToken.check(token, this)) {
+				// 登陆失败
+				ResponseValues response2 = new ResponseValues(this,
+						Thread.currentThread().getStackTrace()[1].getMethodName());
+				response2.put("message", "请重新登陆");
+				response2.put("code", 405);
+				setAttr("InviteResponse", response2);
+				renderMultiJson("InviteResponse");
+				return;
+			}
+			String user_id = AppToken.getUserId(token, this);
+			User user = User.dao.findById(user_id);
+			String latitude =user.get("latitude");
+			String longitude =user.get("longitude");
+			String province = getPara("province");
+			int is_video = getParaToInt("is_video");
+			List<Invite> iList = new ArrayList<Invite>();
+			if(sort.equals("new")) {
+				iList = Invite.dao.find("SELECT u.nickname,u.city,u.image_01,u.job,"
+						+ "u.birthday,u.height,i.invite_content,i.cost_id,i.invite_explain,u.sex,i.is_top,i.invite_type_id,"
+						+ "ROUND(6378.138*2*ASIN(SQRT(POW(SIN(("+latitude+"*PI()/180-u.latitude*PI()/180)/2),2)+COS("+latitude+"*PI()/180)*COS(u.latitude*PI()/180)*POW"
+						+ "(SIN(("+longitude+"*PI()/180-u.longitude*PI()/180)/2),2)))*1000) AS distance"
+						+ " FROM `user` AS u INNER JOIN invite AS i ON u.`user_id` = i.`user_id` WHERE u.sex = "+sex+" AND i.invite_province = '"+province+"' AND u.is_video = "+is_video+" ORDER BY i.invite_id DESC");
+			} else {
+				iList = Invite.dao.find("SELECT u.nickname,u.city,u.image_01,u.job,"
+						+ "u.birthday,u.height,i.invite_content,i.cost_id,i.invite_explain,u.sex,i.is_top,i.invite_type_id,"
+						+ "ROUND(6378.138*2*ASIN(SQRT(POW(SIN(("+latitude+"*PI()/180-u.latitude*PI()/180)/2),2)+COS("+latitude+"*PI()/180)*COS(u.latitude*PI()/180)*POW"
+						+ "(SIN(("+longitude+"*PI()/180-u.longitude*PI()/180)/2),2)))*1000) AS distance"
+						+ " FROM `user` AS u INNER JOIN invite AS i ON u.`user_id` = i.`user_id` WHERE u.sex = "+sex+" AND i.invite_province = '"+province+"' AND u.is_video = "+is_video+" ORDER BY distance ASC");
+			}
+			final List<Invite> iList2 = iList;
+			final List<Invite> topList = Invite.dao.find("SELECT u.nickname,u.city,u.image_01,u.job,u.sex,"
+					+ "u.height,i.invite_content,i.cost_id,i.invite_explain,i.is_top,i.invite_type_id,"
+					+ "ROUND(6378.138*2*ASIN(SQRT(POW(SIN(("+latitude+"*PI()/180-u.latitude*PI()/180)/2),2)+COS("+latitude+"*PI()/180)*COS(u.latitude*PI()/180)*POW"
+					+ "(SIN(("+longitude+"*PI()/180-u.longitude*PI()/180)/2),2)))*1000) AS distance ,DATE_FORMAT(FROM_DAYS(TO_DAYS(NOW())-TO_DAYS(u.birthday)), '%Y')+0 AS age"
+					+ " FROM `user` AS u INNER JOIN invite AS i ON u.`user_id` = i.`user_id` and i.is_top = 1 ORDER BY i.`invite_id` DESC LIMIT 0,3");
+			
+			ResponseValues response = new ResponseValues(this,
+					Thread.currentThread().getStackTrace()[1].getMethodName());
+			response.put("message", "");
+			response.put("status", 1);
+			response.put("code", 200);
+			response.put("Result", new HashMap<String, Object>() {
+				{
+					put("list", iList2);
+					put("topList", topList);
+				}
+			});
+			setAttr("InviteResponse", response);
+			renderMultiJson("InviteResponse");
+			AppLog.info(null, getRequest());
+		} catch (Exception e) {
+			AppLog.error(e, getRequest());
+		} finally {
+			AppData.analyze("InviteController/list", "筛选邀约列表", this);
+		}
+	}
+	
 	public void saveTravel() {
 		try {
 			boolean save = false;
