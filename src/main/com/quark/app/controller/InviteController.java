@@ -52,7 +52,12 @@ public class InviteController extends Controller{
 					+ "u.height,i.invite_content,i.cost_id,i.invite_explain,i.is_top,i.invite_type_id,"
 					+ "ROUND(6378.138*2*ASIN(SQRT(POW(SIN(("+latitude+"*PI()/180-u.latitude*PI()/180)/2),2)+COS("+latitude+"*PI()/180)*COS(u.latitude*PI()/180)*POW"
 					+ "(SIN(("+longitude+"*PI()/180-u.longitude*PI()/180)/2),2)))*1000) AS distance ,DATE_FORMAT(FROM_DAYS(TO_DAYS(NOW())-TO_DAYS(u.birthday)), '%Y')+0 AS age"
-					+ " FROM `user` AS u INNER JOIN invite AS i ON u.`user_id` = i.`user_id` "+filter_sql+" ORDER BY i.`is_top` DESC");
+					+ " FROM `user` AS u INNER JOIN invite AS i ON u.`user_id` = i.`user_id` "+filter_sql+" and i.is_top = 0");
+			final List<Invite> topList = Invite.dao.find("SELECT u.nickname,u.city,u.image_01,u.job,u.sex,"
+					+ "u.height,i.invite_content,i.cost_id,i.invite_explain,i.is_top,i.invite_type_id,"
+					+ "ROUND(6378.138*2*ASIN(SQRT(POW(SIN(("+latitude+"*PI()/180-u.latitude*PI()/180)/2),2)+COS("+latitude+"*PI()/180)*COS(u.latitude*PI()/180)*POW"
+					+ "(SIN(("+longitude+"*PI()/180-u.longitude*PI()/180)/2),2)))*1000) AS distance ,DATE_FORMAT(FROM_DAYS(TO_DAYS(NOW())-TO_DAYS(u.birthday)), '%Y')+0 AS age"
+					+ " FROM `user` AS u INNER JOIN invite AS i ON u.`user_id` = i.`user_id` "+filter_sql+" and i.is_top = 1 ORDER BY i.`invite_id` DESC LIMIT 0,3");
 			ResponseValues response = new ResponseValues(this,
 					Thread.currentThread().getStackTrace()[1].getMethodName());
 			response.put("message", "");
@@ -61,6 +66,7 @@ public class InviteController extends Controller{
 			response.put("Result", new HashMap<String, Object>() {
 				{
 					put("list", iList);
+					put("topList", topList);
 				}
 			});
 			setAttr("InviteResponse", response);
