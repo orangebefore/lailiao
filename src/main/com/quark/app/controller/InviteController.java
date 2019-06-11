@@ -48,10 +48,10 @@ public class InviteController extends Controller{
 			String message="";
 			String user_id = AppToken.getUserId(token, this);
 			User user = User.dao.findById(user_id);
-			final List<Invite> iList = Invite.dao.find("SELECT u.nickname,u.city,u.image_01,u.job,"
-					+ "u.birthday,u.height,i.invite_content,i.cost_id,i.invite_explain,i.is_top,i.invite_type_id,"
+			final List<Invite> iList = Invite.dao.find("SELECT u.nickname,u.city,u.image_01,u.job,u.sex,"
+					+ "u.height,i.invite_content,i.cost_id,i.invite_explain,i.is_top,i.invite_type_id,"
 					+ "ROUND(6378.138*2*ASIN(SQRT(POW(SIN(("+latitude+"*PI()/180-u.latitude*PI()/180)/2),2)+COS("+latitude+"*PI()/180)*COS(u.latitude*PI()/180)*POW"
-					+ "(SIN(("+longitude+"*PI()/180-u.longitude*PI()/180)/2),2)))*1000) AS distance"
+					+ "(SIN(("+longitude+"*PI()/180-u.longitude*PI()/180)/2),2)))*1000) AS distance ,DATE_FORMAT(FROM_DAYS(TO_DAYS(NOW())-TO_DAYS(u.birthday)), '%Y')+0 AS age"
 					+ " FROM `user` AS u INNER JOIN invite AS i ON u.`user_id` = i.`user_id` "+filter_sql+" ORDER BY i.`is_top` DESC");
 			ResponseValues response = new ResponseValues(this,
 					Thread.currentThread().getStackTrace()[1].getMethodName());
