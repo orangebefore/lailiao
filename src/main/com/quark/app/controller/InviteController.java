@@ -11,12 +11,15 @@ import com.quark.app.logs.AppLog;
 import com.quark.common.AppData;
 import com.quark.common.config;
 import com.quark.interceptor.AppToken;
+import com.quark.model.extend.Gift;
 import com.quark.model.extend.Invite;
 import com.quark.model.extend.InviteCost;
 import com.quark.model.extend.InviteTime;
+import com.quark.model.extend.MyGift;
 import com.quark.model.extend.TravelDays;
 import com.quark.model.extend.TravelMode;
 import com.quark.model.extend.User;
+import com.quark.utils.DateUtils;
 import com.quark.utils.FileUtils;
 
 public class InviteController extends Controller{
@@ -57,7 +60,7 @@ public class InviteController extends Controller{
 					+ "u.height,i.invite_content,i.cost_id,i.invite_explain,i.is_top,i.invite_type_id,"
 					+ "ROUND(6378.138*2*ASIN(SQRT(POW(SIN(("+latitude+"*PI()/180-u.latitude*PI()/180)/2),2)+COS("+latitude+"*PI()/180)*COS(u.latitude*PI()/180)*POW"
 					+ "(SIN(("+longitude+"*PI()/180-u.longitude*PI()/180)/2),2)))*1000) AS distance ,DATE_FORMAT(FROM_DAYS(TO_DAYS(NOW())-TO_DAYS(u.birthday)), '%Y')+0 AS age"
-					+ " FROM `user` AS u INNER JOIN invite AS i ON u.`user_id` = i.`user_id` "+filter_sql+" and i.is_top = 1 ORDER BY i.`invite_id` DESC LIMIT 0,3");
+					+ " FROM `user` AS u INNER JOIN invite AS i ON u.`user_id` = i.`user_id` "+filter_sql+" and i.is_top = 1 ORDER BY i.`top_date` DESC LIMIT 0,3");
 			ResponseValues response = new ResponseValues(this,
 					Thread.currentThread().getStackTrace()[1].getMethodName());
 			response.put("message", "");
@@ -122,7 +125,7 @@ public class InviteController extends Controller{
 					+ "u.height,i.invite_content,i.cost_id,i.invite_explain,i.is_top,i.invite_type_id,"
 					+ "ROUND(6378.138*2*ASIN(SQRT(POW(SIN(("+latitude+"*PI()/180-u.latitude*PI()/180)/2),2)+COS("+latitude+"*PI()/180)*COS(u.latitude*PI()/180)*POW"
 					+ "(SIN(("+longitude+"*PI()/180-u.longitude*PI()/180)/2),2)))*1000) AS distance ,DATE_FORMAT(FROM_DAYS(TO_DAYS(NOW())-TO_DAYS(u.birthday)), '%Y')+0 AS age"
-					+ " FROM `user` AS u INNER JOIN invite AS i ON u.`user_id` = i.`user_id` and i.is_top = 1 ORDER BY i.`invite_id` DESC LIMIT 0,3");
+					+ " FROM `user` AS u INNER JOIN invite AS i ON u.`user_id` = i.`user_id` and i.is_top = 1 ORDER BY i.`top_date` DESC LIMIT 0,3");
 			
 			ResponseValues response = new ResponseValues(this,
 					Thread.currentThread().getStackTrace()[1].getMethodName());
@@ -539,10 +542,6 @@ public class InviteController extends Controller{
 			AppLog.info("", getRequest());
 		}
 	}
-	//筛选
-	public void search(){
-		
-	}
 	//邀约详情
 	public void details() {
 		String token;
@@ -590,5 +589,63 @@ public class InviteController extends Controller{
 			AppLog.info("", getRequest());
 		}
 	}
+	
+	//购买置顶
+	public void payTop(){
+		try {
+			int invite_id = getParaToInt("invite_id");
+			String token = getPara("token");
+			if (!AppToken.check(token, this)) {
+				// 登陆失败
+				ResponseValues response2 = new ResponseValues(this,
+						Thread.currentThread().getStackTrace()[1].getMethodName());
+				response2.put("message", "请重新登陆");
+				response2.put("code", 405);
+				setAttr("InviteResponse", response2);
+				renderMultiJson("InviteResponse");
+				return;
+			}
+			int status = 0;
+			boolean save = false;
+			String message="置顶失败";
+			String user_id = AppToken.getUserId(token, this);
+			User user = User.dao.findFirst("select * from user where user_id = "+user_id);
+			int user_gold_value = user.get("user_gold_value");
+			int left_user_gold_value = user_gold_value;
+			if (user_gold_value<5000) {
+				status = 2;
+				message="当前钻石余额不足";
+			}else {
+				Invite invite = Invite.dao.findById(invite_id);
+				Integer is_top = invite.get("is_top");
+				System.out.println(is_top);
+				if (is_top == 1) {
+					message="已经置顶";
+				}else {
+					save = invite.set(Invite.is_top, 1).set("top_date", DateUtils.getCurrentDateTime()).update();
+				}
+				if (save) {
+					left_user_gold_value = user_gold_value - 5000;
+					user.set(user.user_gold_value, left_user_gold_value)
+					.update();
+					status = 1;
+					message="置顶成功";
+				}
+			}
+			ResponseValues response = new ResponseValues(this,
+					Thread.currentThread().getStackTrace()[1].getMethodName());
+			response.put("message", message);
+			response.put("status", status);
+			response.put("code", 200);
+			setAttr("InviteResponse", response);
+			renderMultiJson("InviteResponse");
+			AppLog.info(null, getRequest());
+		} catch (Exception e) {
+			AppLog.error(e, getRequest());
+		} finally {
+			AppLog.info("", getRequest());
+		}
+	}
+	
 	
 }

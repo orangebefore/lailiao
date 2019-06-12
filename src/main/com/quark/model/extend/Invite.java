@@ -42,6 +42,9 @@ public class Invite extends Model<Invite>{
     public static final String user_id="columnName=user_id,remarks=用户id,dataType=int,defaultValue=null";
     
     public static final String is_top="columnName=is_top,remarks=是否置顶,dataType=int,defaultValue=null";
+    
+    public static final String top_date="columnName=top_date,remarks=置顶时间,dataType=String,defaultValue=null";
+
 
 
 }
