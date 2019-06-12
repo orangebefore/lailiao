@@ -44,6 +44,8 @@ import com.quark.model.extend.Charge;
 import com.quark.model.extend.ChargeGold;
 import com.quark.model.extend.Gift;
 import com.quark.model.extend.GoldPrice;
+import com.quark.model.extend.InvitationPriceEntity;
+import com.quark.model.extend.Invite;
 import com.quark.model.extend.Price;
 import com.quark.model.extend.Tag;
 import com.quark.model.extend.Tokens;
@@ -315,4 +317,6 @@ public class PaysGold extends Controller {
 	@URLParam(defaultValue = "", explain = Value.Infer, type = Type.String, name = "out_trade_no")
 	@ReturnJson("{'CommitProjectResponse':{'status':1}}")
 	public void unionPayAysn() throws Exception {}
+	
+	
 }

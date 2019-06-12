@@ -6,12 +6,14 @@ import java.util.List;
 
 import com.jfinal.upload.UploadFile;
 import com.jfinal.core.Controller;
+import com.quark.admin.controller.InvitationPrice;
 import com.quark.api.auto.bean.ResponseValues;
 import com.quark.app.logs.AppLog;
 import com.quark.common.AppData;
 import com.quark.common.config;
 import com.quark.interceptor.AppToken;
 import com.quark.model.extend.Gift;
+import com.quark.model.extend.InvitationPriceEntity;
 import com.quark.model.extend.Invite;
 import com.quark.model.extend.InviteCost;
 import com.quark.model.extend.InviteTime;
@@ -611,8 +613,10 @@ public class InviteController extends Controller{
 			String user_id = AppToken.getUserId(token, this);
 			User user = User.dao.findFirst("select * from user where user_id = "+user_id);
 			int user_gold_value = user.get("user_gold_value");
+			InvitationPriceEntity invitationPriceEntity = InvitationPriceEntity.dao.findFirst("select * from invitation_price");
+			Integer price = invitationPriceEntity.get("price");
 			int left_user_gold_value = user_gold_value;
-			if (user_gold_value<5000) {
+			if (user_gold_value<price) {
 				status = 2;
 				message="当前钻石余额不足";
 			}else {
@@ -625,7 +629,7 @@ public class InviteController extends Controller{
 					save = invite.set(Invite.is_top, 1).set("top_date", DateUtils.getCurrentDateTime()).update();
 				}
 				if (save) {
-					left_user_gold_value = user_gold_value - 5000;
+					left_user_gold_value = user_gold_value - price;
 					user.set(user.user_gold_value, left_user_gold_value)
 					.update();
 					status = 1;
@@ -645,7 +649,8 @@ public class InviteController extends Controller{
 		} finally {
 			AppLog.info("", getRequest());
 		}
-	}
+	}	
+	
 	
 	
 }

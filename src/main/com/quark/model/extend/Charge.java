@@ -39,5 +39,8 @@ public class Charge extends Model<Charge>{
     public static final String charge_hour="columnName=charge_hour,remarks=充值小时：2016-01-09 05,dataType=String,defaultValue=";
 
     public static final String pay_type="columnName=pay_type,remarks=1-支付宝，2-微信，3-银联,dataType=int,defaultValue=null";
+    
+    public static final String buy_type="columnName=buy_type,remarks=1-vip,2-超级明星,dataType=int,defaultValue=null";
+
 
 }

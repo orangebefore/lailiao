@@ -125,6 +125,13 @@ public class User extends Model<User>{
     public static final String pay_car="columnName=pay_car,remarks=汽车认证购买,dataType=int,defaultValue=0";
     
     public static final String pay_house="columnName=pay_house,remarks=汽车认证购买,dataType=int,defaultValue=0";
+    
+    public static final String is_star="columnName=is_star,remarks=是否超级明星0-不是,1-是,dataType=int,defaultValue=0";
+
+    public static final String star_from_datetime="columnName=vip_from_datetime,remarks=超级明星开始时间,dataType=String,defaultValue=null";
+
+    public static final String star_end_datetime="columnName=vip_end_datetime,remarks=超级明星开始时间,dataType=String,defaultValue=null";
+
 
 		
 	}

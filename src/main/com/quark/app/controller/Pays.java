@@ -42,6 +42,7 @@ import com.quark.common.OrderUtils;
 import com.quark.interceptor.AppToken;
 import com.quark.model.extend.Charge;
 import com.quark.model.extend.ChargeAudit;
+import com.quark.model.extend.ChargeGold;
 import com.quark.model.extend.Gift;
 import com.quark.model.extend.GoldPrice;
 import com.quark.model.extend.Notices;
@@ -127,6 +128,7 @@ public class Pays extends Controller {
 
 		String token = getPara("token", null);
 		
+		
 		String message = "";
 		User user = User.dao.findById(user_id);
 		/**
@@ -142,7 +144,7 @@ public class Pays extends Controller {
 				.set(charge.end_time, DateUtils.getAddDaysString2(days, DateUtils.getCurrentDateTime()))
 				.set(charge.days, days).set("is_pay", 0).set(charge.charge_time, DateUtils.getCurrentDateTime())
 				.set(charge.money, money).set(charge.charge_month, DateUtils.getCurrentMonth()).set("type", sex)
-				.set("pay_type", 4).set(charge.charge_date, DateUtils.getCurrentDate())
+				.set("pay_type", 4).set(charge.charge_date, DateUtils.getCurrentDate()).set(charge.buy_type, 1)
 				.set(charge.charge_hour, DateUtils.getCurrentDateHours()).save();
 		if (save) {
 			int out_trade_no = charge.get("charge_id");
@@ -173,6 +175,85 @@ public class Pays extends Controller {
 					response.put("out_trade_no",out_trade_no);
 					setAttr("PayResponse", response);
 					renderMultiJson("PayResponse");
+				} catch (AlipayApiException e) {
+					e.printStackTrace();
+				}
+
+			}
+		}
+
+	}
+	@Author("chen")
+	@Rp("支付")
+	@Explaination(info = "购买超级明星")
+	@URLParam(defaultValue = "", explain = Value.Infer, type = Type.String, name = Tokens.token)
+	@URLParam(defaultValue = "", explain = "用户类型：1-甜心大哥，0-甜心宝贝", type = Type.String, name = "sex")
+	@URLParam(defaultValue = "", explain = "天数", type = Type.String, name = "days")
+	@URLParam(defaultValue = "", explain = "用户ID", type = Type.String, name = "user_id")
+	@URLParam(defaultValue = "", explain = "超级明星价格", type = Type.String, name = "price")
+	@URLParam(defaultValue = "{app、h5}", explain = Value.Infer, type = Type.String, name = "invoke")
+
+	@ReturnOutlet(name = "PayStarResponse{charge_id}", remarks = "付款Id", dataType = DataType.String, defaultValue = "")
+	@ReturnOutlet(name = "PayStarResponse{pay_id}", remarks = "支付流水号", dataType = DataType.String, defaultValue = "")
+	@ReturnOutlet(name = "PayVipStarResponse{message}", remarks = "", dataType = DataType.String, defaultValue = "")
+	@ReturnOutlet(name = "PayStarResponse{status}", remarks = "", dataType = DataType.Int, defaultValue = "")
+	@ReturnOutlet(name = "PayStarResponse{code}", remarks = "200-正常返回，405-重新登陆", dataType = DataType.Int, defaultValue = "")
+	public void payStar() throws Exception {
+		int pay_type = 1;//getParaToInt("pay_type", 1);
+		int sex = getParaToInt("sex", 11);
+		int days = getParaToInt("days", 0);
+		int user_id = getParaToInt("user_id", 0);
+		String price_str = getPara("price", "00");
+
+		String token = getPara("token", null);
+		
+		
+		String message = "";
+		User user = User.dao.findById(user_id);
+		/**
+		 * log
+		 */
+		AppLog.info("购买-生成购买订单", getRequest());
+		/**
+		 * end
+		 */
+		BigDecimal money = new BigDecimal(price_str);
+		Charge charge = new Charge();
+		boolean save = charge.set(charge.user_id, user_id).set(charge.from_time, DateUtils.getCurrentDateTime())
+				.set(charge.end_time, DateUtils.getAddDaysString2(days, DateUtils.getCurrentDateTime()))
+				.set(charge.days, days).set("is_pay", 0).set(charge.charge_time, DateUtils.getCurrentDateTime())
+				.set(charge.money, money).set(charge.charge_month, DateUtils.getCurrentMonth()).set("type", sex)
+				.set("pay_type", 4).set(charge.charge_date, DateUtils.getCurrentDate()).set(charge.buy_type, 2)
+				.set(charge.charge_hour, DateUtils.getCurrentDateHours()).save();
+		if (save) {
+			int out_trade_no = charge.get("charge_id");
+			if (pay_type == 1) {
+
+				// 实例化客户端
+				// 实例化具体API对应的request类,类名称和接口名称对应,当前调用接口名称：alipay.trade.app.pay
+				AlipayTradeAppPayRequest request = new AlipayTradeAppPayRequest();
+				// SDK已经封装掉了公共参数，这里只需要传入业务参数。以下方法为sdk的model入参方式(model和biz_content同时存在的情况下取biz_content)。
+				AlipayTradeAppPayModel model = new AlipayTradeAppPayModel();
+				model.setBody("支付订单号：" + out_trade_no);
+				model.setSubject("支付订单号：" + out_trade_no);
+				model.setOutTradeNo("" + out_trade_no);
+				model.setTimeoutExpress("30m");
+				model.setTotalAmount(money.toString());
+				model.setProductCode("QUICK_MSECURITY_PAY");
+				request.setBizModel(model);
+				request.setNotifyUrl(alipayConfig.notify_url);
+				try {
+					// 这里和普通的接口调用不同，使用的是sdkExecute
+					AlipayTradeAppPayResponse alipayTradeAppPayResponse = alipayClient.sdkExecute(request);
+					ResponseValues response = new ResponseValues(this,
+							Thread.currentThread().getStackTrace()[1].getMethodName());
+					response.put("ALIPAY_APP_SELLER", alipayConfig.APP_SELLER);
+					response.put("ALIPAY_APP_ID", alipayConfig.APP_ID);
+					response.put("ALIPAY_APP_PRIVATE_KEY", alipayConfig.APP_PRIVATE_KEY);
+					response.put("ALIPAY_PUBLIC_KEY", alipayConfig.ALIPAY_PUBLIC_KEY);
+					response.put("out_trade_no",out_trade_no);
+					setAttr("PayStarResponse", response);
+					renderMultiJson("PayStarResponse");
 				} catch (AlipayApiException e) {
 					e.printStackTrace();
 				}
@@ -213,8 +294,13 @@ public class Pays extends Controller {
 				String trade_no = getPara("trade_no");
 				String out_trade_no = getPara("out_trade_no");
 				Charge log = Charge.dao.findFirst("SELECT * FROM charge WHERE charge_id = ?",out_trade_no);
+				int buy_type = log.get("buy_type");
 				if (log != null) {
-					OrderUtils.Dall(log);
+					if (buy_type==1) {
+						OrderUtils.Dall(log);
+					}else{
+						OrderUtils.DallStar(log);
+					}
 					int user_id = log.get(Charge.user_id);
 					Notices notices = Notices.dao.findFirst("select * from notices where user_id=? and type=1",user_id);
 					if(notices != null) {
@@ -279,80 +365,117 @@ public class Pays extends Controller {
 	public void unionPayAysn() throws Exception {
 	}
 	
-	@Author("cluo")
+	@Author("chen")
 	@Rp("支付")
 	@Explaination(info = "购买认证")
 	@UpdateLog(date = "2019-06-10 10:12", log = "初次添加")
 	@URLParam(defaultValue = "", explain = Value.Infer, type = Type.String, name = Tokens.token)
-	@URLParam(defaultValue = "", explain = "天数", type = Type.String, name = "days")
+	@URLParam(defaultValue = "", explain = "{1-支付宝、2-微信、3-银联}", type = Type.Int, name = "pay_type")
 	@URLParam(defaultValue = "", explain = "用户ID", type = Type.String, name = "user_id")
 	@URLParam(defaultValue = "", explain = "认证价格", type = Type.String, name = "price")
+	@URLParam(defaultValue = "", explain = "{1-汽车、2-房子}", type = Type.Int, name = "aduit_type")
 	@URLParam(defaultValue = "{app、h5}", explain = Value.Infer, type = Type.String, name = "invoke")
-
-	@ReturnOutlet(name = "PayVipResponse{charge_id}", remarks = "付款Id", dataType = DataType.String, defaultValue = "")
-	@ReturnOutlet(name = "PayVipResponse{pay_id}", remarks = "支付流水号", dataType = DataType.String, defaultValue = "")
-	@ReturnOutlet(name = "PayVipResponse{message}", remarks = "", dataType = DataType.String, defaultValue = "")
-	@ReturnOutlet(name = "PayVipResponse{status}", remarks = "", dataType = DataType.Int, defaultValue = "")
-	@ReturnOutlet(name = "PayVipResponse{code}", remarks = "200-正常返回，405-重新登陆", dataType = DataType.Int, defaultValue = "")
-	public void payAudit() throws Exception {
-		int pay_type = 1;//getParaToInt("pay_type", 1);
-		int days = getParaToInt("days", 0);
+	@ReturnOutlet(name = "payAuditResponse{charge_id}", remarks = "付款Id", dataType = DataType.String, defaultValue = "")
+	@ReturnOutlet(name = "payAuditResponse{pay_id}", remarks = "支付流水号", dataType = DataType.String, defaultValue = "")
+	@ReturnOutlet(name = "payAuditResponse{message}", remarks = "", dataType = DataType.String, defaultValue = "")
+	@ReturnOutlet(name = "payAuditResponse{status}", remarks = "", dataType = DataType.Int, defaultValue = "")
+	@ReturnOutlet(name = "payAuditResponse{code}", remarks = "200-正常返回，405-重新登陆", dataType = DataType.Int, defaultValue = "")
+	public void payAudit() {
+		int pay_type = getParaToInt("pay_type");
 		int user_id = getParaToInt("user_id", 0);
 		String price_str = getPara("price", "00");
+		int aduit_type = getParaToInt("aduit_type");
 
 		String token = getPara("token", null);
+		if (!AppToken.check(token, this)) {
+			// 登陆失败
+			ResponseValues response2 = new ResponseValues(this, Thread
+					.currentThread().getStackTrace()[1].getMethodName());
+			response2.put("code", 405);
+			response2.put("message", "请重新登陆");
+			setAttr("payAuditResponse", response2);
+			renderMultiJson("payAuditResponse");
+			return;
+		}
 		
 		String message = "";
 		User user = User.dao.findById(user_id);
 		/**
 		 * log
 		 */
-		AppLog.info("购买-生成购买订单", getRequest());
+		AppLog.info("购买-生成购买审核订单", getRequest());
 		/**
 		 * end
 		 */
 		BigDecimal money = new BigDecimal(price_str);
 		ChargeAudit cAudit = new ChargeAudit();
-		boolean save = cAudit.set(cAudit.user_id,user_id).set(cAudit.is_pay, "1").set(cAudit.charge_time, DateUtils.getCurrentDateTime())
-				.set(cAudit.money, money).set(cAudit.charge_month, DateUtils.getCurrentMonth())
-				.set("pay_type", 4).set(cAudit.charge_date, DateUtils.getCurrentDate())
-				.set(cAudit.charge_hour, DateUtils.getCurrentDateHours())
-				.save();
-		if (save) {
-			user.set(user.pay_car, 1).update();
-			int out_trade_no = cAudit.get("charge_audit_id");
-			if (pay_type == 1) {
+		boolean save = cAudit.set(cAudit.user_id, user_id).set(cAudit.charge_month, DateUtils.getCurrentMonth())
+				.set(cAudit.charge_time, DateUtils.getCurrentDateTime()).set(cAudit.aduit_type, aduit_type)
+				.set("is_pay", 0).set(cAudit.charge_date, DateUtils.getCurrentDate())
+				.set(cAudit.money, money).set(cAudit.charge_hour, DateUtils.getCurrentDateHours())
+				.set("pay_type", 4).save();
+		int charge_audit_id = cAudit.get("charge_audit_id");
+		cAudit = ChargeAudit.dao.findById(charge_audit_id);
+		ResponseValues response2 = new ResponseValues(this, Thread
+				.currentThread().getStackTrace()[1].getMethodName());
+		// 充值方式pay_type：1-支付宝、2-微信、3-银联
+		if (pay_type==1) {
 
-				// 实例化客户端
-				// 实例化具体API对应的request类,类名称和接口名称对应,当前调用接口名称：alipay.trade.app.pay
-				AlipayTradeAppPayRequest request = new AlipayTradeAppPayRequest();
-				// SDK已经封装掉了公共参数，这里只需要传入业务参数。以下方法为sdk的model入参方式(model和biz_content同时存在的情况下取biz_content)。
-				AlipayTradeAppPayModel model = new AlipayTradeAppPayModel();
-				model.setBody("支付订单号：" + out_trade_no);
-				model.setSubject("支付订单号：" + out_trade_no);
-				model.setOutTradeNo("" + out_trade_no);
-				model.setTimeoutExpress("30m");
-				model.setTotalAmount(money.toString());
-				model.setProductCode("QUICK_MSECURITY_PAY");
-				request.setBizModel(model);
-				request.setNotifyUrl(alipayConfig.notify_url);
-				try {
-					// 这里和普通的接口调用不同，使用的是sdkExecute
-					AlipayTradeAppPayResponse alipayTradeAppPayResponse = alipayClient.sdkExecute(request);
-					ResponseValues response = new ResponseValues(this,
-							Thread.currentThread().getStackTrace()[1].getMethodName());
-					response.put("ALIPAY_APP_SELLER", alipayConfig.APP_SELLER);
-					response.put("ALIPAY_APP_ID", alipayConfig.APP_ID);
-					response.put("ALIPAY_APP_PRIVATE_KEY", alipayConfig.APP_PRIVATE_KEY);
-					response.put("ALIPAY_PUBLIC_KEY", alipayConfig.ALIPAY_PUBLIC_KEY);
-					response.put("out_trade_no",out_trade_no);
-					setAttr("PayResponse", response);
-					renderMultiJson("PayResponse");
-				} catch (AlipayApiException e) {
-					e.printStackTrace();
-				}
-
+			// 实例化客户端
+			// 实例化具体API对应的request类,类名称和接口名称对应,当前调用接口名称：alipay.trade.app.pay
+			AlipayTradeAppPayRequest request = new AlipayTradeAppPayRequest();
+			// SDK已经封装掉了公共参数，这里只需要传入业务参数。以下方法为sdk的model入参方式(model和biz_content同时存在的情况下取biz_content)。
+			AlipayTradeAppPayModel model = new AlipayTradeAppPayModel();
+			model.setBody("支付订单号：" + charge_audit_id);
+			model.setSubject("支付订单号：" + charge_audit_id);
+			model.setOutTradeNo("" + charge_audit_id);
+			model.setTimeoutExpress("30m");
+			model.setTotalAmount(money.toString());
+			model.setProductCode("QUICK_MSECURITY_PAY");
+			request.setBizModel(model);
+			request.setNotifyUrl(alipayConfig.gold_notify_url);
+			try {
+				// 这里和普通的接口调用不同，使用的是sdkExecute
+				AlipayTradeAppPayResponse alipayTradeAppPayResponse = alipayClient.sdkExecute(request);
+				ResponseValues response = new ResponseValues(this,
+						Thread.currentThread().getStackTrace()[1].getMethodName());
+				response.put("ALIPAY_APP_SELLER", alipayConfig.APP_SELLER);
+				response.put("ALIPAY_APP_ID", alipayConfig.APP_ID);
+				response.put("ALIPAY_APP_PRIVATE_KEY", alipayConfig.APP_PRIVATE_KEY);
+				response.put("ALIPAY_PUBLIC_KEY", alipayConfig.ALIPAY_PUBLIC_KEY);
+				response.put("out_trade_no",charge_audit_id);
+				setAttr("payAuditResponse", response);
+				renderMultiJson("payAuditResponse");
+			} catch (AlipayApiException e) {
+				e.printStackTrace();
 			}
+
+		} else if (pay_type==2) {
+			Double d_money = new Double(money.intValue() * 100);
+			response2 = com.tenpay.util.WeixinPayGoldUtils.createOrder("购买认证:" + money, "购买认证", "" + charge_audit_id, ""
+					+ d_money.intValue());
+			String prepayid = response2.get("prepayid").toString();
+			if (prepayid.equals("")) {
+				response2.put("status", 0);
+			}else{
+				cAudit.set("pay_id", response2.get("prepayid")).update();
+				response2.put("status", 1);
+			}
+			response2.put("pay_money", money);
+			response2.put("code", 200);
+			setAttr("payAuditResponse", response2);
+			renderMultiJson("payAuditResponse");
+		}else if (pay_type==3) {
+			// 银联支付
+			String sn = UnionPayUtils.createOrder(charge_audit_id, money.doubleValue());
+			cAudit.set("pay_id", sn).update();
+			
+			response2.put("code", 200);
+			response2.put("charge_id", charge_audit_id);
+			response2.put("pay_id", sn);
+			response2.put("pay_money", money);
+			setAttr("payAuditResponse", response2);
+			renderMultiJson("payAuditResponse");
 		}
 
 	}

@@ -18,6 +18,7 @@ import com.jfinal.plugin.ehcache.CacheInterceptor;
 import com.jfinal.plugin.ehcache.CacheKit;
 import com.jfinal.plugin.ehcache.CacheName;
 import com.jfinal.plugin.ehcache.EvictInterceptor;
+import com.quark.admin.controller.LikePart;
 import com.quark.api.annotation.Author;
 import com.quark.api.annotation.DataType;
 import com.quark.api.annotation.Explaination;
@@ -37,6 +38,7 @@ import com.quark.model.extend.Browse;
 import com.quark.model.extend.CellPhone;
 import com.quark.model.extend.Collection;
 import com.quark.model.extend.LoveYu;
+import com.quark.model.extend.Part;
 import com.quark.model.extend.Search;
 import com.quark.model.extend.Sweet;
 import com.quark.model.extend.Tokens;
@@ -78,6 +80,7 @@ public class Home extends Controller implements Serializable {
 	@ReturnDBParam(name = "SweetsResponse{SweetsResult:sweets:list[sweet:$]}", column = User.height)
 	@ReturnDBParam(name = "SweetsResponse{SweetsResult:sweets:list[sweet:$]}", column = User.city)
 	@ReturnDBParam(name = "SweetsResponse{SweetsResult:sweets:list[sweet:$]}", column = User.is_vip)
+	@ReturnDBParam(name = "SweetsResponse{SweetsResult:sweets:list[sweet:$]}", column = User.is_star)
 	@ReturnDBParam(name = "SweetsResponse{SweetsResult:sweets:list[sweet:$]}", column = User.sex)
 	@ReturnOutlet(name = "SweetsResponse{SweetsResult:sweets:list[sweet:loved_count]}", remarks = "被爱人数", dataType = DataType.String, defaultValue = "")
 	@ReturnOutlet(name = "SweetsResponse{SweetsResult:sweets:list[sweet:active_time]}", remarks = "活跃时间", dataType = DataType.String, defaultValue = "")
@@ -143,10 +146,11 @@ public class Home extends Controller implements Serializable {
 				filter_sql = filter_sql + " and user_id not in(" + strC + ") ";
 			}
 			 Page<User> userPage = null;
+			 Page<User> topPage = null;
 			int type = getParaToInt("type",1);
 			if(type==1){
 				userPage = User.dao.paginate(pn, page_size,
-					"select regist_date,heart,user_id,telephone,sex,image_01,nickname,job,birthday,height,city,is_vip,last_login_time,round(6378.138*2*asin(sqrt(pow(sin( (latitude*pi()/180-"
+					"select regist_date,heart,user_id,telephone,sex,image_01,nickname,job,,birthday,height,city,is_vip,last_login_time,round(6378.138*2*asin(sqrt(pow(sin( (latitude*pi()/180-"
 								+ user_latitude + "*pi()/180)/2),2)+cos(latitude*pi()/180)*cos("
 								+ user_latitude + "*pi()/180)* pow(sin( (longitude*pi()/180-" + user_longitude
 								+ "*pi()/180)/2),2)))*1000) as distance",
@@ -174,12 +178,18 @@ public class Home extends Controller implements Serializable {
 							+ " and sex=? and user_id!=? and is_set_heart=1 and TIMESTAMPDIFF(DAY,regist_time,'"+DateUtils.getCurrentDateTime()+"')< 60 order by regist_time desc,distance asc,last_login_time desc,hot desc",
 					taste, user_id);
 			}
+			topPage = User.dao.paginate(pn, page_size, "select DATE_FORMAT( star_end_datetime, '%Y-%m-%d') AS endTime,regist_date,heart,user_id,telephone,sex,image_01,nickname,job,birthday,height,city,is_vip,is_star,last_login_time,round(6378.138*2*asin(sqrt(pow(sin( (latitude*pi()/180-"
+					+ user_latitude + "*pi()/180)/2),2)+cos(latitude*pi()/180)*cos("
+					+ user_latitude + "*pi()/180)* pow(sin( (longitude*pi()/180-" + user_longitude
+					+ "*pi()/180)/2),2)))*1000) as distance", " from user where is_star = 1  order by endTime desc LIMIT 0,5");
 			List<User> userList = userPage.getList();
+			List<User> topList = topPage.getList();
 			for (User user2 : userList) {
 				int user_id2 = user2.get("user_id");
 				// 出生年月日
 				Date birthday = user2.getDate("birthday");
 				int age_int = 0;
+				int topUserAge_int = 0;
 				if (birthday != null) {
 					String age_date = user2.getDate("birthday").toString();
 					if (!age_date.equals("") && age_date != null) {
@@ -192,7 +202,6 @@ public class Home extends Controller implements Serializable {
 				user2.put("loved_count", collections.size());
 				// 什么时候登录
 				String last_login_time = user2.getTimestamp("last_login_time").toString();
-				
 				String current_time = DateUtils.getCurrentDateTime();
 				String active_time = DateUtils.getActiveTime(last_login_time, current_time);
 				if(type==1){
@@ -225,12 +234,63 @@ public class Home extends Controller implements Serializable {
 				}
 
 			}
+			for (User user3 : topList) {
+				int user_id3 = user3.get("user_id");
+				// 出生年月日
+				Date birthday = user3.getDate("birthday");
+				int age_int = 0;
+				int topUserAge_int = 0;
+				if (birthday != null) {
+					String age_date = user3.getDate("birthday").toString();
+					if (!age_date.equals("") && age_date != null) {
+						age_int = DateUtils.getCurrentAgeByBirthdate(age_date);
+					}
+				}
+				user3.put("age", age_int + "岁");
+				List<Collection> collections = Collection.dao
+						.find("select collection_id from collection where collection_user_id=" + user_id);
+				user3.put("loved_count", collections.size());
+				// 什么时候登录
+				String last_login_time = user3.getTimestamp("last_login_time").toString();
+				String current_time = DateUtils.getCurrentDateTime();
+				String active_time = DateUtils.getActiveTime(last_login_time, current_time);
+				if(type==1){
+					double distance = user3.getDouble("distance");
+					double d = Math.ceil((distance/1000));
+					user3.put("active_time",String.valueOf(d).replace(".0", "")+"公里");
+					//user2.put("active_time", active_time);
+					System.out.println(user3.get("distance"));
+
+				}
+				else if(type==3){
+					String regist_date = user3.getDate("regist_date").toString();
+					int days = DateUtils.daysBetween(regist_date, DateUtils.getCurrentDate());
+					if(days < 1) {
+						user3.put("active_time","今天");
+					}else {
+						user3.put("active_time", days+"天前");
+					}
+				}else{
+					user3.put("active_time", active_time);
+				}
+				// is like
+				Collection collection = Collection.dao.findFirst(
+						"select collection_id from collection where user_id=? and collection_user_id=?", user_id,
+						user3);
+				if (collection == null) {
+					user3.put("is_like", 0);
+				} else {
+					user3.put("is_like", 1);
+				}
+
+			}
 			ResponseValues responseValues = new ResponseValues(this,
 					Thread.currentThread().getStackTrace()[1].getMethodName());
 			responseValues.put("status", 1);
 			responseValues.put("code", 200);
 			HashMap<String, Object> map = new HashMap<String, Object>(); 
 					map.put("sweets", userPage);
+					map.put("topSweets", topList);
 			responseValues.put("Result", map);
 			responseValues.put("message", "返回成功");
 			setAttr("SweetsResponse", responseValues);
@@ -284,8 +344,10 @@ public class Home extends Controller implements Serializable {
 			renderMultiJson("SearchSweetsResponse");
 			return;
 		}
+		String distance = getPara("distance","不限");
+		String last_login_time = getPara("last_login_time","不限");
+		String sex = getPara("sex","不限");
 		String city = getPara("city", "不限");
-		String distance = getPara("distance", "不限");
 		String is_video = getPara("is_video","不限");
 		String weigth_from = getPara("weigth_from","不限");
 		String weight_to = getPara("weight_to", "不限");
@@ -296,13 +358,11 @@ public class Home extends Controller implements Serializable {
 		String user_latitude = getPara("latitude", "30.344");
 		String user_longitude = getPara("longitude", "120.00");
 		String shape = getPara("shape", "不限");
-		String part_id = getPara("part_id","不限");
-		String sex = getPara("sex","不限");
 		String edu = getPara("edu","不限");
 		String part = getPara("part","不限");
 
 		String filter_sql = " setting_emotion=1 and status=1 and black_status=0 ";
-		
+		String order_sql = " ";
 		/*int status = 0;
 		String message = "";
 		int setting_telecontact = 0;
@@ -355,14 +415,26 @@ public class Home extends Controller implements Serializable {
 		if (!"不限".equals(shape)) {
 			filter_sql = filter_sql + " and shape='" + shape+"'";
 		}
+		if (!"不限".equals(distance)) {
+			order_sql = order_sql + " order by distance desc";
+		}
+		if (!"不限".equals(last_login_time)) {
+			order_sql = order_sql + " order by last_login_time order by";
+		}
 		System.out.println("filter_sqk:"+filter_sql);
+		System.out.println("order_sqk:"+order_sql);
 		final Page<User> userPage = User.dao.paginate(pn, page_size,
 				"select user_id,is_vip,telephone, image_01,nickname,sex,birthday,city,job,round(6378.138*2*asin(sqrt(pow(sin( (latitude*pi()/180-"
 								+ user_latitude + "*pi()/180)/2),2)+cos(latitude*pi()/180)*cos("
 								+ user_latitude + "*pi()/180)* pow(sin( (longitude*pi()/180-" + user_longitude
 								+ "*pi()/180)/2),2)))*1000) as distance ",
-				"from user where " + filter_sql + "  order by is_set_heart desc,hot desc,sweet desc,regist_time desc ");
+				"from user where " + filter_sql + order_sql);
+		final Page<User> topPage = User.dao.paginate(pn, page_size, "select DATE_FORMAT( star_end_datetime, '%Y-%m-%d') AS endTime,regist_date,heart,user_id,telephone,sex,image_01,nickname,job,birthday,height,city,is_vip,is_star,last_login_time,round(6378.138*2*asin(sqrt(pow(sin( (latitude*pi()/180-"
+				+ user_latitude + "*pi()/180)/2),2)+cos(latitude*pi()/180)*cos("
+				+ user_latitude + "*pi()/180)* pow(sin( (longitude*pi()/180-" + user_longitude
+				+ "*pi()/180)/2),2)))*1000) as distance", " from user where is_star = 1  order by endTime desc LIMIT 0,5");
 		List<User> userList = userPage.getList();
+		List<User> topUserList = topPage.getList();
 		for (User user2 : userList) {
 			int user_id2 = user2.get("user_id");
 			// 出生年月日
@@ -376,6 +448,19 @@ public class Home extends Controller implements Serializable {
 			}
 			user2.put("age", age_int + "岁");
 		}
+		for (User user3 : topUserList) {
+			int user_id3 = user3.get("user_id");
+			// 出生年月日
+			Date birthday = user3.getDate("birthday");
+			int age_int = 0;
+			if (birthday != null) {
+				String age_date = user3.getDate("birthday").toString();
+				if (!age_date.equals("") && age_date != null) {
+					age_int = DateUtils.getCurrentAgeByBirthdate(age_date);
+				}
+			}
+			user3.put("age", age_int + "岁");
+		}
 
 		ResponseValues responseValues = new ResponseValues(this,
 				Thread.currentThread().getStackTrace()[1].getMethodName());
@@ -384,6 +469,7 @@ public class Home extends Controller implements Serializable {
 		responseValues.put("Result", new HashMap<String, Object>() {
 			{
 				put("searchSweets", userPage);
+				put("topSweets", topPage);
 			}
 		});
 		responseValues.put("message", "返回成功");
@@ -849,6 +935,36 @@ public class Home extends Controller implements Serializable {
 		} finally {
 			AppLog.info("", getRequest());
 			AppData.analyze("Home/cancelLove", "取消收藏", this);
+		}
+	}
+	
+	public void findPart(){
+		try {
+			String token = getPara("token");
+			String message = "";
+			if (!AppToken.check(token, this)) {
+				// 登陆失败
+				ResponseValues response2 = new ResponseValues(this,
+						Thread.currentThread().getStackTrace()[1].getMethodName());
+				response2.put("code", 405);
+				response2.put("message", "请重新登陆");
+				setAttr("findPartResponse", response2);
+				renderMultiJson("findPartResponse");
+				return;
+			}
+			ResponseValues response2 = new ResponseValues(this,
+					Thread.currentThread().getStackTrace()[1].getMethodName());
+			List<Part> partList = Part.dao.find("SELECT part_id,part_name,sort,`type` FROM `like_part` ORDER BY `sort` ASC");
+			response2.put("partList", partList);
+			response2.put("code", 200);
+			response2.put("message", message);
+			setAttr("findPartResponse", response2);
+			renderMultiJson("findPartResponse");
+		} catch (Exception e) {
+			e.printStackTrace();
+			AppLog.error(e, getRequest());
+		} finally {
+			AppLog.info("", getRequest());
 		}
 	}
 }

@@ -25,4 +25,7 @@ public class ChargeAudit extends Model<ChargeAudit>{
     public static final String charge_hour="columnName=charge_hour,remarks=充值小时：2016-01-09 05,dataType=String,defaultValue=";
 
     public static final String pay_type="columnName=pay_type,remarks=1-支付宝，2-微信，3-银联,dataType=int,defaultValue=null";
+    
+    public static final String aduit_type="columnName=aduit_type,remarks=0-汽车审核，1-房子审核,dataType=int,defaultValue=null";
+
 }

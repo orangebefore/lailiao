@@ -80,4 +80,42 @@ public class OrderUtils {
 		}
 		return update;
 	}
+	
+	public static boolean DallStar(Charge log) throws Exception {
+		// 处理请求
+		boolean update = log.set("is_pay", 1).update();
+		if (update) {
+			int user_id = log.get("user_id");
+			int days = log.get(log.days);
+			String star_from_datetime = log.getTimestamp("from_time").toString();
+			String star_end_datetime = log.getTimestamp("end_time").toString();
+			BigDecimal charge_money = log.getBigDecimal("money");
+			User user = User.dao.findById(user_id);
+			TongjiCharge tRegist = new TongjiCharge();
+			if (user != null) {
+				int sex = user.get(user.sex);
+				if (sex == 0) {
+					tRegist.set(tRegist.catalog, "女");
+				} else {
+					tRegist.set(tRegist.catalog, "男");
+				}
+				// 设置会员记录
+				int is_star = user.get(user.is_star);
+				if (is_star == 0) {
+					user.set(user.star_from_datetime, star_from_datetime).set(user.star_end_datetime, star_end_datetime);
+				} else {
+					String user_star_end_datetime = user.getTimestamp("vip_end_datetime").toString();
+					user.set(user.star_end_datetime, DateUtils.getAddDaysString2(days, user_star_end_datetime));
+				}
+				user.set(user.is_star, 1).update();
+			}
+			tRegist.set(tRegist.user_id, user_id).set(tRegist.post_time, DateUtils.getCurrentDateTime())
+					.set(tRegist.charge_month, DateUtils.getCurrentMonth())
+					.set(tRegist.charge_date, DateUtils.getCurrentDate())
+					.set(tRegist.charge_hour, DateUtils.getCurrentDateHours()).set(tRegist.money, charge_money).save();
+			if (charge_money != null){}
+				//MessageUtils.sendCode2("13910900832", "【甜心在线】用户ID：" + user_id + ",成功充值：" + charge_money + "元。");
+		}
+		return update;
+	}
 }
