@@ -32,8 +32,8 @@ public class RongToken {
 
 	// private static String key = "e0x9wycfxqx9q";//替换成您的appkey--测试环境
 	// private static String secret = "rTbsUmF8jatl3";//替换成匹配上面key的secret--测试环境
-	private static String key = "x18ywvqf8m8yc";// 替换成您的appkey--线上环境
-	private static String secret = "ON2S5PUlfdaH";// 替换成匹配上面key的secret--线上环境
+	private static String key = "x18ywvqfxcv2c";// 替换成您的appkey--线上环境
+	private static String secret = "sNdLmF7urJqrOZ";// 替换成匹配上面key的secret--线上环境
 	private static final String RONGCLOUDURI = "http://api.cn.ronghub.com";
 	private static final String UTF8 = "UTF-8";
 

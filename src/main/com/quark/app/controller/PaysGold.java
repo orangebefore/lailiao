@@ -115,6 +115,7 @@ public class PaysGold extends Controller {
 	@ReturnOutlet(name = "PayGoldResponse{message}", remarks = "", dataType = DataType.String, defaultValue = "")
 	@ReturnOutlet(name = "PayGoldResponse{status}", remarks = "", dataType = DataType.Int, defaultValue = "")
 	@ReturnOutlet(name = "PayGoldResponse{code}", remarks = "200-正常返回，405-重新登陆", dataType = DataType.Int, defaultValue = "")
+	@Before(Tx.class)
 	public void payGold() throws Exception {
 		int pay_type = getParaToInt("pay_type");
 		int gold_value = getParaToInt("gold_value");

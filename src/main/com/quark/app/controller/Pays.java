@@ -119,6 +119,7 @@ public class Pays extends Controller {
 	@ReturnOutlet(name = "PayVipResponse{message}", remarks = "", dataType = DataType.String, defaultValue = "")
 	@ReturnOutlet(name = "PayVipResponse{status}", remarks = "", dataType = DataType.Int, defaultValue = "")
 	@ReturnOutlet(name = "PayVipResponse{code}", remarks = "200-正常返回，405-重新登陆", dataType = DataType.Int, defaultValue = "")
+	@Before(Tx.class)
 	public void payVip() throws Exception {
 		int pay_type = 1;//getParaToInt("pay_type", 1);
 		int sex = getParaToInt("sex", 11);
@@ -198,6 +199,7 @@ public class Pays extends Controller {
 	@ReturnOutlet(name = "PayVipStarResponse{message}", remarks = "", dataType = DataType.String, defaultValue = "")
 	@ReturnOutlet(name = "PayStarResponse{status}", remarks = "", dataType = DataType.Int, defaultValue = "")
 	@ReturnOutlet(name = "PayStarResponse{code}", remarks = "200-正常返回，405-重新登陆", dataType = DataType.Int, defaultValue = "")
+	@Before(Tx.class)
 	public void payStar() throws Exception {
 		int pay_type = 1;//getParaToInt("pay_type", 1);
 		int sex = getParaToInt("sex", 11);

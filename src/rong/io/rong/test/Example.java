@@ -28,8 +28,8 @@ public class Example {
 	 */
 	public static void main(String[] args) throws Exception {
 
-		String key = "e0x9wycfxqx9q";//替换成您的appkey
-		String secret = "rTbsUmF8jatl3";//替换成匹配上面key的secret
+		String key = "x18ywvqfxcv2c";//替换成您的appkey
+		String secret = "sNdLmF7urJqrOZ";//替换成匹配上面key的secret
 
 		SdkHttpResult result = null;
 

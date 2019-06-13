@@ -51,6 +51,7 @@ public class Init extends Controller {
 	public void index() throws IOException, InterruptedException {
 		if (!isStart) {
 			showTimer();
+			showStarTimer();
 			NoticeVipTimer();
 			NoticeTimer();
 			isStart = true;
@@ -139,6 +140,31 @@ public class Init extends Controller {
 							DateUtils.getCurrentDateTime());
 					for (User user : users) {
 						user.set(user.is_vip, 0).update();
+					}
+					try {
+						Thread.currentThread().sleep(1000*60*5);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}
+		});
+		thread.start();
+	}
+	/**
+	 * 定时执行修改超级明星
+	 */
+	public static void showStarTimer() {
+		Thread thread = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				while (true) {
+					List<User> users = User.dao.find(
+							"select user_id,is_star from user where is_star=1 and star_end_datetime <?",
+							DateUtils.getCurrentDateTime());
+					for (User user : users) {
+						user.set(user.is_star, 0).update();
 					}
 					try {
 						Thread.currentThread().sleep(1000*60*5);

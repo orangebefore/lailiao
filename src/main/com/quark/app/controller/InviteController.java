@@ -5,11 +5,14 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.jfinal.upload.UploadFile;
+import com.jfinal.aop.Before;
 import com.jfinal.core.Controller;
+import com.jfinal.plugin.activerecord.tx.Tx;
 import com.quark.admin.controller.InvitationPrice;
 import com.quark.api.auto.bean.ResponseValues;
 import com.quark.app.logs.AppLog;
 import com.quark.common.AppData;
+import com.quark.common.RongToken;
 import com.quark.common.config;
 import com.quark.interceptor.AppToken;
 import com.quark.model.extend.Gift;
@@ -25,6 +28,13 @@ import com.quark.utils.DateUtils;
 import com.quark.utils.FileUtils;
 
 public class InviteController extends Controller{
+	
+	public void pushMessage(){
+		ArrayList<String> arrayList = new ArrayList<>();
+		arrayList.add("48");
+		RongToken.publishMessage("47", arrayList, "你好啊傻逼");
+		renderNull();
+	}
 
 	
 	public void list() {
@@ -593,6 +603,7 @@ public class InviteController extends Controller{
 	}
 	
 	//购买置顶
+	@Before(Tx.class)
 	public void payTop(){
 		try {
 			int invite_id = getParaToInt("invite_id");
