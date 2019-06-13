@@ -346,6 +346,13 @@ public class ReviewController extends Controller implements Serializable{
 		@ReturnOutlet(name = "ReviewResponse{user:token}", remarks = "token", dataType = DataType.String, defaultValue = "")
 		@ReturnOutlet(name = "ReviewResponse{status}", remarks = "1-申请成功，2-申请失败", dataType = DataType.Int, defaultValue = "")
 		@ReturnOutlet(name = "ReviewResponse{code}", remarks = "200-正常返回，405-重新登陆", dataType = DataType.Int, defaultValue = "")
+		/**
+		 * @api {get} /app/saveEdu
+		 * @apiDescription 个性签名的修改审核提交与阿里云识别
+		 * @apiParam {String} token  用户的Token.
+		 * @apiParam {String} content 用户更改的个性签名.
+		 * @apiSuccess {String} lastname  Lastname of the User.
+		 * */
 		public void saveEdu() {
 			String token;
 			ResponseValues response2;
@@ -392,9 +399,27 @@ public class ReviewController extends Controller implements Serializable{
 				AppLog.info("", getRequest());
 			}
 		}
-		private String accessKey = "LTAIJfFt3wtrRC4m";
-		private String accessKeySecret = "xddmxykQGtEHom3cHO5ZMQiO9p4DcF";
+		
+		
+		private String accessKey = "LTAIj2tGt2YF8jv1";
+		private String accessKeySecret = "z9kgH4skJBCRkXHOYOM37i5zYK4hQ4";
 		//个性签名认证
+		/**
+		 * @api {get} http://localhost:8080/app/ReviewController/saveHeart
+		 * @apiDescription 个性签名的修改审核提交与阿里云识别
+		 * @apiParam {String} token  用户的Token.
+		 * @apiParam {String} content 用户更改的个性签名.
+		 * 
+		 * @apiSuccessExample {json} Success-Response:
+		 *
+		 * {
+		 *	"ReviewResponse": {
+		 *		"code": 400,			//除了200均为错误
+		 *		"message": "未知错误",	//返回的信息
+		 *		"status": 0				//状态为1为成功，0为失败
+		 *		}
+		 *}
+		 * */
 		public void saveHeart() {
 			String token;
 			ResponseValues response2;
@@ -475,20 +500,27 @@ public class ReviewController extends Controller implements Serializable{
 	                					responseValues.put("status", 1);
 	                					message = "更改成功，审核通过后将会显示！";
 	                				}
-	                				responseValues.put("message",message);
 	                				responseValues.put("code", 200);
-	                				setAttr("ReviewResponse", responseValues);
-	                				renderMultiJson("ReviewResponse");
+	                				
 	                            }
 	                        }else{
 	                            System.out.println("task process fail:" + ((JSONObject)taskResult).getInteger("code"));
+	                            message = "未知错误";
+	                            responseValues.put("code", ((JSONObject)taskResult).getInteger("code"));
+	                            responseValues.put("status", 0);
 	                        }
 	                    }
 	                } else {
 	                    System.out.println("detect not success. code:" + scrResponse.getInteger("code"));
+	                    message = "未知错误";
+	                    responseValues.put("code", scrResponse.getInteger("code"));
+	                    responseValues.put("status", 0);
 	                }
 	            }else{
 	                System.out.println("response not success. status:" + httpResponse.getStatus());
+	                message = "未知错误";
+	                responseValues.put("status", httpResponse.getStatus());
+	                responseValues.put("code", 500);
 	            }
 	        } catch (ServerException e) {
 	            e.printStackTrace();
@@ -498,6 +530,9 @@ public class ReviewController extends Controller implements Serializable{
 	            e.printStackTrace();
 	        }finally{
 				AppLog.info("", getRequest());
+				responseValues.put("message",message);
+				setAttr("ReviewResponse", responseValues);
+				renderMultiJson("ReviewResponse");
 			}
 		}		
 }
