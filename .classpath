@@ -5,6 +5,7 @@
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/alipay-sdk-java20170615110434.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/aliyun-java-sdk-core-3.0.7.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/aliyun-java-sdk-green-3.0.0.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/aliyun-java-sdk-green-3.4.3.jar"/>
 	<classpathentry kind="src" path="src/jfinal">
 		<attributes>
 			<attribute name="ignore_optional_problems" value="true"/>
@@ -106,5 +107,6 @@
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/commons-beanutils-1.7.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="WebContent/WEB-INF/lib/org.apache.httpcomponents.httpclient_4.3.5.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="C:/Users/3b/Desktop/aliyun-java-sdk-green-3.4.3.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

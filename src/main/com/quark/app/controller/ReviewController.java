@@ -1,8 +1,25 @@
 package com.quark.app.controller;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.aliyuncs.DefaultAcsClient;
+import com.aliyuncs.IAcsClient;
+import com.aliyuncs.exceptions.ClientException;
+import com.aliyuncs.exceptions.ServerException;
+import com.aliyuncs.green.model.v20170112.TextScanRequest;
+import com.aliyuncs.http.FormatType;
+import com.aliyuncs.http.HttpResponse;
+import com.aliyuncs.profile.DefaultProfile;
+import com.aliyuncs.profile.IClientProfile;
 import com.jfinal.core.Controller;
 import com.jfinal.upload.UploadFile;
 import com.quark.api.annotation.Author;
@@ -22,10 +39,7 @@ import com.quark.model.extend.Audit;
 import com.quark.model.extend.CarCategroy;
 import com.quark.model.extend.CarClassify;
 import com.quark.model.extend.Certification;
-import com.quark.model.extend.SuperstarPrice;
 import com.quark.model.extend.Tokens;
-import com.quark.model.extend.User;
-import com.quark.utils.DateUtils;
 import com.quark.utils.FileUtils;
 
 /**
@@ -297,10 +311,10 @@ public class ReviewController extends Controller implements Serializable{
 				Audit Audit = new Audit();
 				Audit.dao.find("select * from certification where user_id =" + user_id);
 				if(Audit != null) {
-					save  = Audit.dao.set("house_url", FileUtils.renameToFile(HouseImg_Url))
+					save  = Audit.set("house_url", FileUtils.renameToFile(HouseImg_Url))
 							.set("house_reason", "").set("house_status",2).update();
 				}else {
-					save  = Audit.dao.set("house_url", FileUtils.renameToFile(HouseImg_Url))
+					save  = Audit.set("house_url", FileUtils.renameToFile(HouseImg_Url))
 							.set("user_id",user_id).save();
 				}
 				ResponseValues responseValues = new ResponseValues(this, Thread.currentThread().getStackTrace()[1].getMethodName());
@@ -353,10 +367,10 @@ public class ReviewController extends Controller implements Serializable{
 				Audit Audit = new Audit();
 				Audit.dao.find("select * from certification where user_id =" + user_id);
 				if(Audit != null) {
-					save  = Audit.dao.set("edu_url", FileUtils.renameToFile(EduImg_Url))
+					save  = Audit.set("edu_url", FileUtils.renameToFile(EduImg_Url))
 							.set("edu_reason", "").set("edu_status",2).update();
 				}else {
-					save  = Audit.dao.set("edu_url", FileUtils.renameToFile(EduImg_Url)).set("edu_reason", "")
+					save  = Audit.set("edu_url", FileUtils.renameToFile(EduImg_Url)).set("edu_reason", "")
 							.set("user_id",user_id).set("edu_status",2).save();
 				}
 				ResponseValues responseValues = new ResponseValues(this, Thread.currentThread().getStackTrace()[1].getMethodName());
@@ -378,12 +392,112 @@ public class ReviewController extends Controller implements Serializable{
 				AppLog.info("", getRequest());
 			}
 		}
-		
+		private String accessKey = "LTAIJfFt3wtrRC4m";
+		private String accessKeySecret = "xddmxykQGtEHom3cHO5ZMQiO9p4DcF";
 		//个性签名认证
 		public void saveHeart() {
-			
+			String token;
+			ResponseValues response2;
+			token = getPara("token");
+			boolean save = false;
+			ResponseValues responseValues = new ResponseValues(this, Thread.currentThread().getStackTrace()[1].getMethodName());
+            String message = "";
+			if (!AppToken.check(token, this)) {
+				response2 = new ResponseValues(this, Thread.currentThread().getStackTrace()[1].getMethodName());
+				// 登陆失败
+				response2.put("message", "请重新登陆");
+				response2.put("code", 405);
+				setAttr("ReviewResponse", response2);
+				renderMultiJson("ReviewResponse");
+				return;
+			}
+			IClientProfile profile = DefaultProfile.getProfile("cn-kunmin", accessKey , accessKeySecret );
+	        IAcsClient client = new DefaultAcsClient(profile);
+	        TextScanRequest textScanRequest = new TextScanRequest();
+	        textScanRequest.setAcceptFormat(FormatType.JSON); // 指定api返回格式
+	        textScanRequest.setContentType(FormatType.JSON);
+	        textScanRequest.setMethod(com.aliyuncs.http.MethodType.POST); // 指定请求方法
+	        textScanRequest.setEncoding("UTF-8");
+	        textScanRequest.setRegionId("cn-shanghai");
+	        List<Map<String, Object>> tasks = new ArrayList<Map<String, Object>>();
+	        Map<String, Object> task1 = new LinkedHashMap<String, Object>();
+	        task1.put("dataId", UUID.randomUUID().toString());
+	        /**
+	         	* 待检测的文本，长度不超过10000个字符
+	         */
+	        String waitString = getPara("content");
+	        task1.put("content", waitString );
+	        tasks.add(task1);
+	        JSONObject data = new JSONObject();
+	        /**
+	         * 检测场景，文本垃圾检测传递：antispam
+	         **/
+	        data.put("scenes", Arrays.asList("antispam"));
+	        data.put("tasks", tasks);
+	        System.out.println(JSON.toJSONString(data, true));
+	        try {
+	        	textScanRequest.setContent(data.toJSONString().getBytes("UTF-8"), "UTF-8", FormatType.JSON);
+		        // 请务必设置超时时间
+		        textScanRequest.setConnectTimeout(3000);
+		        textScanRequest.setReadTimeout(6000);
+	            HttpResponse httpResponse = client.doAction(textScanRequest);
+	            if(httpResponse.isSuccess()){
+	                JSONObject scrResponse = JSON.parseObject(new String(httpResponse.getContent(), "UTF-8"));
+	                //System.out.println(JSON.toJSONString(scrResponse, true));
+	                if (200 == scrResponse.getInteger("code")) {
+	                    JSONArray taskResults = scrResponse.getJSONArray("data");
+	                    for (Object taskResult : taskResults) {
+	                        if(200 == ((JSONObject)taskResult).getInteger("code")){
+	                            JSONArray sceneResults = ((JSONObject)taskResult).getJSONArray("results");
+	                            for (Object sceneResult : sceneResults) {
+	                                String scene = ((JSONObject)sceneResult).getString("scene");
+	                                String suggestion = ((JSONObject)sceneResult).getString("suggestion");
+	                                //根据scene和suggetion做相关处理
+	                                //suggestion == pass 未命中垃圾  suggestion == block 命中了垃圾，可以通过label字段查看命中的垃圾分类
+//	                                System.out.println("-----------------------------------------------");
+//	                                System.out.println("args = [" + scene + "]");
+//	                                System.out.println("***********************************************");
+//	                                System.out.println("args = [" + suggestion + "]");
+//	                                System.out.println("-----------------------------------------------");
+	                				if(!suggestion.equals("pass") ) {
+	                					responseValues.put("status", 0);
+	                					message = "含有敏感词汇，请更改";
+	                				}else {
+	                					String user_id = AppToken.getUserId(token, this);
+	                					Audit audit = new Audit();
+	                					audit = Audit.dao.findFirst("select * from certification where user_id =" + user_id);
+	                					System.out.println(audit.heart_status);
+	                					if(audit != null) {
+	                						save  = audit.set("is_heart", waitString).set("heart_status",2).update();
+	                					}else {
+	                						save  = audit.set("user_id",user_id).set("is_heart", waitString).set("heart_status",2).save();
+	                					}
+	                					responseValues.put("status", 1);
+	                					message = "更改成功，审核通过后将会显示！";
+	                				}
+	                				responseValues.put("message",message);
+	                				responseValues.put("code", 200);
+	                				setAttr("ReviewResponse", responseValues);
+	                				renderMultiJson("ReviewResponse");
+	                            }
+	                        }else{
+	                            System.out.println("task process fail:" + ((JSONObject)taskResult).getInteger("code"));
+	                        }
+	                    }
+	                } else {
+	                    System.out.println("detect not success. code:" + scrResponse.getInteger("code"));
+	                }
+	            }else{
+	                System.out.println("response not success. status:" + httpResponse.getStatus());
+	            }
+	        } catch (ServerException e) {
+	            e.printStackTrace();
+	        } catch (ClientException e) {
+	            e.printStackTrace();
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	        }finally{
+				AppLog.info("", getRequest());
+			}
 		}		
-		
-		
-		
 }
