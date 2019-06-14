@@ -86,6 +86,79 @@ public class Home extends Controller implements Serializable {
 	@ReturnOutlet(name = "SweetsResponse{SweetsResult:sweets:list[sweet:active_time]}", remarks = "活跃时间", dataType = DataType.String, defaultValue = "")
 	@ReturnOutlet(name = "SweetsResponse{status}", remarks = "1-操作成功", dataType = DataType.Int, defaultValue = "")
 	@ReturnOutlet(name = "SweetsResponse{code}", remarks = "200-正常返回，405-重新登陆", dataType = DataType.Int, defaultValue = "")
+	
+	/**
+	 * @api {get} /app/Home/sweets 首页显示
+	 * @apiDescription 首页普通用户和超级明星的展示
+	 * @apiGroup Home
+	 * @apiParam {String} token  用户的Token.
+	 * @apiParam {Number} type 1-附近，2-线上，3-新人
+	 *
+	 * 
+	 * @apiVersion 1.0.0
+	 * @apiSuccessExample {json} Success-Response:
+	 * {
+	 *  "SweetsResponse": {
+        "code": 200,
+        "message": "返回成功",
+        "sweetsResult": {
+            "topSweets": [     //超级明星列表
+                {
+                    "birthday": "1989-01-01",		//生日
+                    "last_login_time": "2019-06-14 09:49:16",	//最后登录时间
+                    "distance": 0,	//距离
+                    "city": null,	//城市
+                    "image_01": "1455965571482.jpg",	//头像1
+                    "is_vip": 0,	//是否VIP 0-不是，1-是
+                    "sex": 0,	//性别：0-女，1-男
+                    "regist_date": "2016-02-20",	//注册日期
+                    "telephone": "18503058915",	//手机号码
+                    "loved_count": 2,	//被爱人数
+                    "heart": null,		//个性签名
+                    "active_time": "0公里",	//距离公里
+                    "user_id": 34,	//用户id
+                    "is_like": 0,	//是否喜欢
+                    "nickname": "xiaofang",	//昵称
+                    "endTime": "2019-06-16",	//超级明星结束时间
+                    "is_star": 1,	//是否超级明星0-不是,1-是
+                    "job": "高管",		//职业
+                    "age": "30岁",	//年龄
+                    "height": "180CM以上"	//身高
+                }
+            ],
+            "sweets": {
+                "totalRow": 186,
+                "pageNumber": 1,
+                "totalPage": 38,
+                "pageSize": 5,
+                "list": [
+                    {
+                        "birthday": "1983-01-01", //生日
+                        "last_login_time": "2019-06-06 17:25:38", //最后登录时间
+                        "distance": 2315181, //距离
+                        "city": "广州市"，                //城市
+                        "image_01": "1456109546949.jpg",	//头像1
+                        "is_vip": 0,	//是否VIP 0-不是，1-是
+                        "sex": 1,		//性别：0-女，1-男
+                        "regist_date": "2016-02-20", //注册日期
+                        "telephone": "18503058914",	//手机号码
+                        "loved_count": 0,	//被爱人数
+                        "heart": "摩羯里",	//个性签名
+                        "active_time": "2316公里",  //距离公里
+                        "user_id": 33,		//用户id
+                        "is_like": 0,	//是否喜欢
+                        "nickname": "xiaoguan",	//昵称
+                        "job": "IT",	//职业
+                        "age": "36岁",	//年龄
+                        "height": "180CM以上"		//身高
+                    }
+                ]
+            }
+        },
+        "status": 1
+    }
+}
+	 * */
 	// 缓存
 	public void sweets() {
 		try {
@@ -150,7 +223,7 @@ public class Home extends Controller implements Serializable {
 			int type = getParaToInt("type",1);
 			if(type==1){
 				userPage = User.dao.paginate(pn, page_size,
-					"select regist_date,heart,user_id,telephone,sex,image_01,nickname,job,,birthday,height,city,is_vip,last_login_time,round(6378.138*2*asin(sqrt(pow(sin( (latitude*pi()/180-"
+					"select regist_date,heart,user_id,telephone,sex,image_01,nickname,job,birthday,height,city,is_vip,last_login_time,round(6378.138*2*asin(sqrt(pow(sin( (latitude*pi()/180-"
 								+ user_latitude + "*pi()/180)/2),2)+cos(latitude*pi()/180)*cos("
 								+ user_latitude + "*pi()/180)* pow(sin( (longitude*pi()/180-" + user_longitude
 								+ "*pi()/180)/2),2)))*1000) as distance",
@@ -181,7 +254,7 @@ public class Home extends Controller implements Serializable {
 			topPage = User.dao.paginate(pn, page_size, "select DATE_FORMAT( star_end_datetime, '%Y-%m-%d') AS endTime,regist_date,heart,user_id,telephone,sex,image_01,nickname,job,birthday,height,city,is_vip,is_star,last_login_time,round(6378.138*2*asin(sqrt(pow(sin( (latitude*pi()/180-"
 					+ user_latitude + "*pi()/180)/2),2)+cos(latitude*pi()/180)*cos("
 					+ user_latitude + "*pi()/180)* pow(sin( (longitude*pi()/180-" + user_longitude
-					+ "*pi()/180)/2),2)))*1000) as distance", " from user where is_star = 1  order by endTime desc LIMIT 0,5");
+					+ "*pi()/180)/2),2)))*1000) as distance", " from user where is_star = 1  order by endTime desc");
 			List<User> userList = userPage.getList();
 			List<User> topList = topPage.getList();
 			for (User user2 : userList) {
@@ -310,25 +383,104 @@ public class Home extends Controller implements Serializable {
 	@URLParam(defaultValue = "", explain = Value.Infer, type = Type.String, name = Tokens.token)
 	@URLParam(defaultValue = "", explain = "距离，离我最近", type = Type.String, name = "distance")
 	@URLParam(defaultValue = "", explain = "活跃，最近活跃", type = Type.String, name = "last_login_time")
-	//@URLParam(defaultValue = "", explain = "距离，默认为不限", type = Type.String, name = "distance_to")
 	@URLParam(defaultValue = "", explain = "性别，默认则不限", type = Type.String, name = "sex")
 	@URLParam(defaultValue = "", explain = "城市，默认则不限", type = Type.String, name = "city")
 	@URLParam(defaultValue = "", explain = "视频认证，默认则不限", type = Type.String, name = "is_video")
 	@URLParam(defaultValue = "", explain = "从-体重，默认则不限", type = Type.String, name = "weight_from")
-	@URLParam(defaultValue = "", explain = "从-体重，默认则不限", type = Type.String, name = "weight_from")
+	@URLParam(defaultValue = "", explain = "到-体重，默认则不限", type = Type.String, name = "weight_to")
 	@URLParam(defaultValue = "", explain = "从年龄，默认则不限", type = Type.String, name = "age_from")
 	@URLParam(defaultValue = "", explain = "到年龄，默认则不限", type = Type.String, name = "age_to")
 	@URLParam(defaultValue = "", explain = "从-身高，默认则不限", type = Type.String, name = "height_from")
 	@URLParam(defaultValue = "", explain = "到-身高，默认则不限", type = Type.String, name = "height_to")
-	//@URLParam(defaultValue = "", explain = "请求接口：http://sugarbaby.online/rp/index.html#p=个人资料", type = Type.String, name = "shape")
 	@URLParam(defaultValue = "", explain = "学历，默认则不限", type = Type.String, name = "edu")
 	@URLParam(defaultValue = "", explain = "体型，默认则不限", type = Type.String, name = "shape")
 	@URLParam(defaultValue = "", explain = "满意部位，,默认则不限", type = Type.String, name = "part")
-	//@URLParam(defaultValue = "{轻奢，高奢，中等}", explain = "幸福期望,默认则不限", type = Type.String, name = "hope")
-	//@URLParam(defaultValue = "", explain = "月收入，跟个人中心设置一样,默认则不限", type = Type.String, name = "income")
 	@URLParam(defaultValue = "", explain = Value.Infer, type = Type.String_NotRequired, name = User.latitude)
 	@URLParam(defaultValue = "", explain = Value.Infer, type = Type.String_NotRequired, name = User.longitude)
 	@URLParam(defaultValue = "1", explain = Value.Infer, type = Type.String, name = "pn")
+	/**
+	 * @api {get} /app/Home/search 用户筛选
+	 * @apiDescription 筛选后普通用户和超级明星的展示
+	 * @apiGroup Home
+	 * @apiParam {String} token  用户的Token.
+	 * @apiParam {String} [distance] 按距离，默认则不限
+	 * @apiParam {String} [last_login_time]  按活跃时间，默认则不限
+	 * @apiParam {String} [sex]  性别，默认则不限
+	 * @apiParam {String} [city]  城市，默认则不限
+	 * @apiParam {String} [is_video]  视频认证，默认则不限
+	 * @apiParam {String} [weight_from]  从-体重，默认则不限
+	 * @apiParam {String} [weight_to]  到-体重，默认则不限
+	 * @apiParam {String} [age_from]  从年龄，默认则不限
+	 * @apiParam {String} [age_to]  到年龄，默认则不限
+	 * @apiParam {String} [height_from]  从-身高，默认则不限
+	 * @apiParam {String} [height_to]  到-身高，默认则不限
+	 * @apiParam {String} [edu]  学历，默认则不限
+	 * @apiParam {String} [shape]  体型，默认则不限
+	 * @apiParam {String} [part]  满意部位，,默认则不限
+	 * @apiParam {String} [latitude]  用户经度
+	 * @apiParam {String} [longitude]  用户纬度
+	 *
+	 * 
+	 * @apiVersion 1.0.0
+	 * @apiSuccessExample {json} Success-Response:
+	 * {
+	 *   "SearchSweetsResponse": {
+        "searchResult": {
+            "topSweets": {	//超级明星列表
+                "totalRow": 2,
+                "pageNumber": 1,
+                "totalPage": 1,
+                "pageSize": 10,
+                "list": [
+                    {
+                        "birthday": "1989-01-01",	//生日
+                        "last_login_time": "2019-06-14 09:49:16",	//最后登陆时间
+                        "distance": 0,	//距离米
+                        "city": null,	//城市
+                        "image_01": "1455965571482.jpg",	//头像
+                        "is_vip": 0,	//是否vip
+                        "sex": 0,	//性别
+                        "regist_date": "2016-02-20",	//注册时间
+                        "telephone": "18503058915",		//手机号
+                        "heart": null,	//个性签名
+                        "user_id": 34,	//用户id
+                        "nickname": "xiaofang",	//昵称
+                        "endTime": "2019-06-16",	//超级明星到期时间
+                        "is_star": 1,	//是否超级明星
+                        "job": "高管",		//职业
+                        "age": "30岁",	//年龄
+                        "height": "180CM以上"		//身高
+                    }
+                ]
+            },
+            "searchSweets": {	//搜索普通用户id
+                "totalRow": 963,
+                "pageNumber": 1,
+                "totalPage": 97,
+                "pageSize": 10,
+                "list": [
+                    {
+                        "birthday": "1995-07-16",	//生日
+                        "distance": 12864421,	//距离米
+                        "user_id": 256,	//用户id
+                        "city": null,	//城市
+                        "is_vip": 0,	//是否vip
+                        "image_01": "",	//头像
+                        "sex": 1,	//性别
+                        "nickname": "喧哗华丽落幕",	//昵称
+                        "telephone": "13978123514",		//手机号码
+                        "job": "职场白领",	//职业
+                        "age": "24岁"	//年龄
+                    }
+                ]
+            }
+        },
+        "code": 200,
+        "message": "返回成功",
+        "status": 1
+    }
+}
+	 * */
 	public void search() {
 		int pn = getParaToInt("pn", 1);
 		int page_size = getParaToInt("page_size", 10);
@@ -378,7 +530,9 @@ public class Home extends Controller implements Serializable {
 			}
 			setting_telecontact = user.get(user.setting_telecontact);
 		}*/
-		filter_sql = filter_sql + " and sex=" + sex;
+		if (!"不限".equals(sex)) {
+			filter_sql = filter_sql + " and sex='" + sex+"'";
+		}
 		if (!"不限".equals(city)) {
 			filter_sql = filter_sql + " and city='" + city+"'";
 		}
@@ -432,7 +586,7 @@ public class Home extends Controller implements Serializable {
 		final Page<User> topPage = User.dao.paginate(pn, page_size, "select DATE_FORMAT( star_end_datetime, '%Y-%m-%d') AS endTime,regist_date,heart,user_id,telephone,sex,image_01,nickname,job,birthday,height,city,is_vip,is_star,last_login_time,round(6378.138*2*asin(sqrt(pow(sin( (latitude*pi()/180-"
 				+ user_latitude + "*pi()/180)/2),2)+cos(latitude*pi()/180)*cos("
 				+ user_latitude + "*pi()/180)* pow(sin( (longitude*pi()/180-" + user_longitude
-				+ "*pi()/180)/2),2)))*1000) as distance", " from user where is_star = 1  order by endTime desc LIMIT 0,5");
+				+ "*pi()/180)/2),2)))*1000) as distance", " from user where is_star = 1  order by endTime desc");
 		List<User> userList = userPage.getList();
 		List<User> topUserList = topPage.getList();
 		for (User user2 : userList) {

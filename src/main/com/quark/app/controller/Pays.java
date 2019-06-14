@@ -45,8 +45,10 @@ import com.quark.model.extend.ChargeAudit;
 import com.quark.model.extend.ChargeGold;
 import com.quark.model.extend.Gift;
 import com.quark.model.extend.GoldPrice;
+import com.quark.model.extend.InvitationPriceEntity;
 import com.quark.model.extend.Notices;
 import com.quark.model.extend.Price;
+import com.quark.model.extend.SuperstarPrice;
 import com.quark.model.extend.Tag;
 import com.quark.model.extend.Tokens;
 import com.quark.model.extend.User;
@@ -97,6 +99,98 @@ public class Pays extends Controller {
 			AppLog.error(e, getRequest());
 		} finally {
 			AppData.analyze("Pays/prices", "价格列表", this);
+		}
+	}
+	
+	/**
+	 * @api {get} /app/Pays/aduiPrices 邀约置顶价格
+	 * @apiDescription 显示邀约价格
+	 * @apiGroup Pays
+	 * @apiVersion 1.0.0
+	 * @apiSuccessExample {json} Success-Response:
+	 * {
+	 *   "aduiPricesResponse": {
+        "code": 200,
+        "aduiPricesResult": {
+            "Price": [
+                {
+                    "price": 500	//置顶价格
+                }
+            ]
+        },
+        "message": "",
+        "status": 1
+    }
+}
+	 * */
+	public void aduiPrices() {
+		try {
+			final List<InvitationPriceEntity> prices = InvitationPriceEntity.dao
+					.find("select price from invitation_price");
+			ResponseValues response = new ResponseValues(this,
+					Thread.currentThread().getStackTrace()[1].getMethodName());
+			response.put("message", "");
+			response.put("status", 1);
+			response.put("code", 200);
+			response.put("Result", new HashMap<String, Object>() {
+				{
+					put("Price", prices);
+				}
+			});
+			setAttr("aduiPricesResponse", response);
+			renderMultiJson("aduiPricesResponse");
+			AppLog.info(null, getRequest());
+		} catch (Exception e) {
+			AppLog.error(e, getRequest());
+		} finally {
+			AppData.analyze("Pays/prices", "邀约价格列表", this);
+		}
+	}
+	
+	/**
+	 * @api {get} /app/Pays/superStarPrices 超级明星价格
+	 * @apiDescription 显示超级明星价格
+	 * @apiGroup Pays
+	 * @apiVersion 1.0.0
+	 * @apiSuccessExample {json} Success-Response:
+	 * {
+	 *   {
+    "superStarPricesResponse": {
+        "code": 200,
+        "superStarPricesResult": {
+            "Price": [
+                {
+                    "hours": 12,	//超级明星使用时间	
+                    "price": 12		//超级明星价格
+                }
+            ]
+        },
+        "message": "",
+        "status": 1
+    }
+}
+	 * */
+	public void superStarPrices() {
+		try {
+			final List<SuperstarPrice> prices = SuperstarPrice.dao
+					.find("select hours,price from superstar_price");
+			ResponseValues response = new ResponseValues(this,
+					Thread.currentThread().getStackTrace()[1].getMethodName());
+			response.put("message", "");
+			response.put("status", 1);
+			response.put("code", 200);
+			response.put("Result", new HashMap<String, Object>() {
+				{
+					put("Price", prices);
+				}
+			});
+			setAttr("superStarPricesResponse", response);
+			renderMultiJson("superStarPricesResponse");
+			AppLog.info(null, getRequest());
+		} catch (Exception e) {
+			AppLog.error(e, getRequest());
+		} finally {
+			AppData.analyze("Pays/prices", "超级明星价格列表", this);
 		}
 	}
 
@@ -196,9 +290,30 @@ public class Pays extends Controller {
 
 	@ReturnOutlet(name = "PayStarResponse{charge_id}", remarks = "付款Id", dataType = DataType.String, defaultValue = "")
 	@ReturnOutlet(name = "PayStarResponse{pay_id}", remarks = "支付流水号", dataType = DataType.String, defaultValue = "")
-	@ReturnOutlet(name = "PayVipStarResponse{message}", remarks = "", dataType = DataType.String, defaultValue = "")
+	@ReturnOutlet(name = "PayStarResponse{message}", remarks = "", dataType = DataType.String, defaultValue = "")
 	@ReturnOutlet(name = "PayStarResponse{status}", remarks = "", dataType = DataType.Int, defaultValue = "")
 	@ReturnOutlet(name = "PayStarResponse{code}", remarks = "200-正常返回，405-重新登陆", dataType = DataType.Int, defaultValue = "")
+	/**
+	 * @api {get} /app/Pays/payStar 购买超级明星
+	 * @apiDescription 支付超级明星
+	 * @apiGroup Pays
+	 * @apiVersion 1.0.0
+     * @apiParam {String} sex  用户类型：1-甜心大哥，0-甜心宝贝
+     * @apiParam {String} days  天数
+     * @apiParam {String} user_id  用户ID
+     * @apiParam {String} price 超级明星价格
+	 * @apiSuccessExample {json} Success-Response:
+	 * InviteResponse": {
+	 * 		PayStarResponse{charge_id}  付款Id
+	 * 		PayStarResponse{pay_id}		支付流水号
+	 *		"code": 400,		200-正常返回，405-重新登陆
+	 *		"message": "",	//返回的信息
+	 *		"status": 1		//状态为1为成功，0为失败
+	 *	}
+	 *}
+}
+	 * */
+	
 	@Before(Tx.class)
 	public void payStar() throws Exception {
 		int pay_type = 1;//getParaToInt("pay_type", 1);
@@ -367,6 +482,27 @@ public class Pays extends Controller {
 	public void unionPayAysn() throws Exception {
 	}
 	
+	/**
+	 * @api {get} /app/Pays/payAudit 购买认证
+	 * @apiDescription 支付认证
+	 * @apiGroup Pays
+	 * @apiVersion 1.0.0
+     * @apiParam {String} pay_type  {1-支付宝、2-微信、3-银联}"
+ 	 * @apiParam {String} token  用户的Token.
+     * @apiParam {String} user_id 用户ID"
+     * @apiParam {String} aduit_type  认证类型：1-汽车、2-房子
+     * @apiParam {String} price 认证价格
+	 * @apiSuccessExample {json} Success-Response:
+	 * InviteResponse": {
+	 * 		PayStarResponse{charge_id}  付款Id
+	 * 		PayStarResponse{pay_id}		支付流水号
+	 *		"code": 400,		200-正常返回，405-重新登陆
+	 *		"message": "",	//返回的信息
+	 *		"status": 1		//状态为1为成功，0为失败
+	 *	}
+	 *}
+}
+	 * */
 	@Author("chen")
 	@Rp("支付")
 	@Explaination(info = "购买认证")
@@ -382,6 +518,7 @@ public class Pays extends Controller {
 	@ReturnOutlet(name = "payAuditResponse{message}", remarks = "", dataType = DataType.String, defaultValue = "")
 	@ReturnOutlet(name = "payAuditResponse{status}", remarks = "", dataType = DataType.Int, defaultValue = "")
 	@ReturnOutlet(name = "payAuditResponse{code}", remarks = "200-正常返回，405-重新登陆", dataType = DataType.Int, defaultValue = "")
+	@Before(Tx.class)
 	public void payAudit() {
 		int pay_type = getParaToInt("pay_type");
 		int user_id = getParaToInt("user_id", 0);

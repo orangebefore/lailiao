@@ -1,0 +1,16 @@
+{
+  "name": "Sweetheart",
+  "version": "1.0.0",
+  "description": "接口文档",
+  "title": "Sweetheart",
+  "url": "",
+  "sampleUrl": false,
+  "defaultVersion": "0.0.0",
+  "apidoc": "0.3.0",
+  "generator": {
+    "name": "apidoc",
+    "time": "2019-06-14T09:42:00.415Z",
+    "url": "http://apidocjs.com",
+    "version": "0.17.7"
+  }
+}

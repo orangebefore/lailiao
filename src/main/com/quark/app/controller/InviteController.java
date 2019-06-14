@@ -29,14 +29,60 @@ import com.quark.utils.FileUtils;
 
 public class InviteController extends Controller{
 	
-	public void pushMessage(){
-		ArrayList<String> arrayList = new ArrayList<>();
-		arrayList.add("48");
-		RongToken.publishMessage("47", arrayList, "你好啊傻逼");
-		renderNull();
-	}
-
-	
+	/**
+	 * @api {get} /app/InviteController/list 邀约显示
+	 * @apiDescription 邀约首页的显示和邀约分类显示
+	 * @apiGroup InviteController
+	 * @apiParam {String} token  用户的Token.
+	 * @apiParam {String} latitude =30.344  用户的纬度
+	 * @apiParam {String} longitude =120.00 用户的经度
+	 * @apiParam {String} [invite_type_id]  邀约的类型id：1-旅游，2-美食，3-唱歌，4-电影，5-运动，6-文艺，不填查询全部
+	 * @apiVersion 1.0.0
+	 * @apiSuccessExample {json} Success-Response:
+	 * {
+	 *  "InviteResponse": {
+	 *      "listResult": {
+	 *          "topList": [
+	 *          {
+     *              "invite_content": "唱跳rap篮球", 	//邀约内容
+     *              "invite_explain": "i want to play basketball",	//邀约说明
+     *              "distance": 12188067,	//邀约发起人与用户的距离（米）
+     *              "city": null,	//邀约城市
+     *              "image_01": "",	//邀约图片
+     *              "sex": 0,	//邀约对象性别：0-男，1-女，2-不限
+     *              "is_top": 1,	//邀约是否置顶：1-是，0-否
+     *              "cost_id": 1,	//邀约费用id：1-我买单，2-AA制，3-来回机票我承担，4-期望对方承担
+     *              "nickname": "兰兰",	//邀约发起人昵称
+     *              "invite_type_id": 5,	//邀约类型id：1-旅游，2-美食，3-唱歌，4-电影，5-运动，6-文艺
+     *              "job": "助理",	//邀约发起人工作
+     *              "age": 28,	//邀约发起人年龄
+     *              "height": "180CM及以上"	//邀约发起人身高
+     *          }
+     *          ],
+	 *          "list": [
+	 *              {
+	 *                  "invite_content": "唱跳rap篮球",	//邀约内容
+	 *                  "invite_explain": "i want to play basketball",	//邀约说明
+	 *                  "distance": 8911148,	//邀约发起人与用户的距离（米）
+	 *                  "city": "广州市",	//邀约城市
+	 *                  "image_01": "1456109546949.jpg",	//邀约图片
+	 *                  "sex": 1,	//邀约对象性别：0-男，1-女，2-不限
+	 *                  "is_top": 0,	//邀约是否置顶：1-是，0-否
+	 *                  "cost_id": 1,	//邀约费用id：1-我买单，2-AA制，3-来回机票我承担，4-期望对方承担
+	 *                  "nickname": "xiaoguan",	//邀约发起人昵称
+	 *                  "invite_type_id": 4,	//邀约类型id：1-旅游，2-美食，3-唱歌，4-电影，5-运动，6-文艺
+	 *                  "job": "IT",	//邀约发起人工作
+	 *                  "age": 36,	//邀约发起人年龄
+	 *                  "height": "180CM以上"	//邀约发起人身高
+	 *              }
+	 *          ]
+	 *      },
+	 *      "code": 200,	//除了200均为错误，405需要重新登录
+	 *      "message": "",	//返回的信息
+	 *      "status": 1	//状态为1为成功，0为失败
+	 *  }
+	 * }
+	 * */
 	public void list() {
 		try {
 			String token = getPara("token");
@@ -60,7 +106,6 @@ public class InviteController extends Controller{
 			}else {
 				filter_sql = filter_sql+"invite_type_id ="+type;
 			}
-			String message="";
 			String user_id = AppToken.getUserId(token, this);
 			User user = User.dao.findById(user_id);
 			final List<Invite> iList = Invite.dao.find("SELECT u.nickname,u.city,u.image_01,u.job,u.sex,"
@@ -72,7 +117,7 @@ public class InviteController extends Controller{
 					+ "u.height,i.invite_content,i.cost_id,i.invite_explain,i.is_top,i.invite_type_id,"
 					+ "ROUND(6378.138*2*ASIN(SQRT(POW(SIN(("+latitude+"*PI()/180-u.latitude*PI()/180)/2),2)+COS("+latitude+"*PI()/180)*COS(u.latitude*PI()/180)*POW"
 					+ "(SIN(("+longitude+"*PI()/180-u.longitude*PI()/180)/2),2)))*1000) AS distance ,DATE_FORMAT(FROM_DAYS(TO_DAYS(NOW())-TO_DAYS(u.birthday)), '%Y')+0 AS age"
-					+ " FROM `user` AS u INNER JOIN invite AS i ON u.`user_id` = i.`user_id` "+filter_sql+" and i.is_top = 1 ORDER BY i.`top_date` DESC LIMIT 0,3");
+					+ " FROM `user` AS u INNER JOIN invite AS i ON u.`user_id` = i.`user_id` where i.is_top = 1 ORDER BY i.`top_date` DESC LIMIT 0,3");
 			ResponseValues response = new ResponseValues(this,
 					Thread.currentThread().getStackTrace()[1].getMethodName());
 			response.put("message", "");
@@ -93,13 +138,76 @@ public class InviteController extends Controller{
 			AppData.analyze("InviteController/list", "邀约列表", this);
 		}
 	}
-	
+
+	/**
+	 * @api {get} /app/InviteController/screenList 邀约筛选	 
+	 * @apiGroup InviteController
+	 * @apiDescription 邀约筛选查询
+	 * @apiParam {String} token  用户的Token.
+	 * @apiParam {String} sex  筛选邀约发起人的性别：0-女，1-男，2-全部.
+	 * @apiParam {String} sort  筛选方式：new-最新发布，place-离我最近
+	 * @apiParam {String} latitude =30.344  用户的纬度
+	 * @apiParam {String} longitude =120.00 用户的经度
+	 * @apiParam {String} province  筛选省
+	 * @apiParam {int} is_video  是否筛选视频认证：0-关闭视频认证筛选，1-开启视频认证筛选
+	 * @apiVersion 1.0.0
+	 * @apiSuccessExample {json} Success-Response:
+	 * {
+	 *  "InviteResponse": {
+	 *      "listResult": {
+	 *          "topList": [
+	 *          {
+     *              "invite_content": "唱跳rap篮球", 	//邀约内容
+     *              "invite_explain": "i want to play basketball",	//邀约说明
+     *              "distance": 12188067,	//邀约发起人与用户的距离
+     *              "city": null,	//邀约城市
+     *              "image_01": "",	//邀约图片
+     *              "sex": 0,	//邀约对象性别，0-男：1-女，2-不限
+     *              "is_top": 1,	//邀约是否置顶：1-是，0-否
+     *              "cost_id": 1,	//邀约费用id：1-我买单，2-AA制，3-来回机票我承担，4-期望对方承担
+     *              "nickname": "兰兰",	//邀约发起人昵称
+     *              "invite_type_id": 5,	//邀约类型id：1-旅游，2-美食，3-唱歌，4-电影，5-运动，6-文艺
+     *              "job": "助理",	//邀约发起人工作
+     *              "age": 28,	//邀约发起人年龄
+     *              "height": "180CM及以上"	//邀约发起人身高
+     *          }
+     *          ],
+	 *          "list": [
+	 *              {
+	 *                  "invite_content": "唱跳rap篮球",	//邀约内容
+	 *                  "invite_explain": "i want to play basketball",	//邀约说明
+	 *                  "distance": 8911148,	//邀约发起人与用户的距离
+	 *                  "city": "广州市",	//邀约城市
+	 *                  "image_01": "1456109546949.jpg",	//邀约图片
+	 *                  "sex": 1,	//邀约对象性别：0-男，1-女，2-不限
+	 *                  "is_top": 0,	//邀约是否置顶：1-是，0-否
+	 *                  "cost_id": 1,	//邀约费用id：1-我买单，2-AA制，3-来回机票我承担，4-期望对方承担
+	 *                  "nickname": "xiaoguan",	//邀约发起人昵称
+	 *                  "invite_type_id": 4,	//邀约类型id：1-旅游，2-美食，3-唱歌，4-电影，5-运动，6-文艺
+	 *                  "job": "IT",	//邀约发起人工作
+	 *                  "age": 36,	//邀约发起人年龄
+	 *                  "height": "180CM以上"	//邀约发起人身高
+	 *              }
+	 *          ]
+	 *      },
+	 *      "code": 200,	//除了200均为错误，405需要重新登录
+	 *      "message": "",	//返回的信息
+	 *      "status": 1	//状态为1为成功，0为失败
+	 *  }
+	 * }
+	 * */
 	public void screenList() {
 		try {
 			boolean save = false;
 			String message = "";
 			String sex = getPara("sex");
 			String sort = getPara("sort");
+			String filterSql = "WHERE ";
+			if(sex.equals("2")) {
+				filterSql = filterSql + "1=1";
+			} else {
+				filterSql = filterSql + "u.sex = "+sex;
+			}
 			int status = 0;
 			String token = getPara("token");
 			if (!AppToken.check(token, this)) {
@@ -114,8 +222,8 @@ public class InviteController extends Controller{
 			}
 			String user_id = AppToken.getUserId(token, this);
 			User user = User.dao.findById(user_id);
-			String latitude =user.get("latitude");
-			String longitude =user.get("longitude");
+			String latitude = getPara("latitude", "30.344");
+			String longitude = getPara("longitude", "120.00");
 			String province = getPara("province");
 			int is_video = getParaToInt("is_video");
 			List<Invite> iList = new ArrayList<Invite>();
@@ -124,20 +232,20 @@ public class InviteController extends Controller{
 						+ "u.birthday,u.height,i.invite_content,i.cost_id,i.invite_explain,u.sex,i.is_top,i.invite_type_id,"
 						+ "ROUND(6378.138*2*ASIN(SQRT(POW(SIN(("+latitude+"*PI()/180-u.latitude*PI()/180)/2),2)+COS("+latitude+"*PI()/180)*COS(u.latitude*PI()/180)*POW"
 						+ "(SIN(("+longitude+"*PI()/180-u.longitude*PI()/180)/2),2)))*1000) AS distance"
-						+ " FROM `user` AS u INNER JOIN invite AS i ON u.`user_id` = i.`user_id` WHERE u.sex = "+sex+" AND i.invite_province = '"+province+"' AND u.is_video = "+is_video+" ORDER BY i.invite_id DESC");
+						+ " FROM `user` AS u INNER JOIN invite AS i ON u.`user_id` = i.`user_id` "+filterSql+" AND i.invite_province = '"+province+"' AND u.is_video = "+is_video+" ORDER BY i.invite_id DESC");
 			} else {
 				iList = Invite.dao.find("SELECT u.nickname,u.city,u.image_01,u.job,"
 						+ "u.birthday,u.height,i.invite_content,i.cost_id,i.invite_explain,u.sex,i.is_top,i.invite_type_id,"
 						+ "ROUND(6378.138*2*ASIN(SQRT(POW(SIN(("+latitude+"*PI()/180-u.latitude*PI()/180)/2),2)+COS("+latitude+"*PI()/180)*COS(u.latitude*PI()/180)*POW"
 						+ "(SIN(("+longitude+"*PI()/180-u.longitude*PI()/180)/2),2)))*1000) AS distance"
-						+ " FROM `user` AS u INNER JOIN invite AS i ON u.`user_id` = i.`user_id` WHERE u.sex = "+sex+" AND i.invite_province = '"+province+"' AND u.is_video = "+is_video+" ORDER BY distance ASC");
+						+ " FROM `user` AS u INNER JOIN invite AS i ON u.`user_id` = i.`user_id` "+filterSql+" AND i.invite_province = '"+province+"' AND u.is_video = "+is_video+" ORDER BY distance ASC");
 			}
 			final List<Invite> iList2 = iList;
 			final List<Invite> topList = Invite.dao.find("SELECT u.nickname,u.city,u.image_01,u.job,u.sex,"
 					+ "u.height,i.invite_content,i.cost_id,i.invite_explain,i.is_top,i.invite_type_id,"
 					+ "ROUND(6378.138*2*ASIN(SQRT(POW(SIN(("+latitude+"*PI()/180-u.latitude*PI()/180)/2),2)+COS("+latitude+"*PI()/180)*COS(u.latitude*PI()/180)*POW"
 					+ "(SIN(("+longitude+"*PI()/180-u.longitude*PI()/180)/2),2)))*1000) AS distance ,DATE_FORMAT(FROM_DAYS(TO_DAYS(NOW())-TO_DAYS(u.birthday)), '%Y')+0 AS age"
-					+ " FROM `user` AS u INNER JOIN invite AS i ON u.`user_id` = i.`user_id` and i.is_top = 1 ORDER BY i.`top_date` DESC LIMIT 0,3");
+					+ " FROM `user` AS u INNER JOIN invite AS i ON u.`user_id` = i.`user_id` WHERE i.is_top = 1 ORDER BY i.`top_date` DESC LIMIT 0,3");
 			
 			ResponseValues response = new ResponseValues(this,
 					Thread.currentThread().getStackTrace()[1].getMethodName());
@@ -160,6 +268,30 @@ public class InviteController extends Controller{
 		}
 	}
 	
+	/**
+	 * @api {post} /app/InviteController/saveTravel 添加旅行邀约
+	 * @apiGroup InviteController
+	 * @apiDescription 用户添加旅行邀约
+	 * @apiParam {String} token  用户的Token.
+	 * @apiParam {String} explain_url  邀约说明图片
+	 * @apiParam {int} cost_id  邀约费用id：1-我买单，2-AA制，3-来回机票我承担，4-期望对方承担
+	 * @apiParam {int} invite_sex 邀约对象性别：0-男，1-女，2-不限
+	 * @apiParam {String} travel_days_id 出行天数：1-当天往返，2-预计1~2天，3-预计2~3天，4-预计3~5天，5-预计10天半个月，6-还准备回来吗？
+	 * @apiParam {String} invite_content  旅行目的地
+	 * @apiParam {String} travel_mode_id  出行方式：1-往返坐飞机，2-动车高铁，3-自驾，4-骑行
+	 * @apiParam {String} is_equal_place  有相同目的地的异性是否通知我 0-是 1-否
+	 * @apiParam {String} invite_explain  邀约说明
+	 * @apiParam {int} time_id  邀约时间：4-双方商议具体时间，5-最近出发，6-某个周末，7-说走就走
+	 * @apiVersion 1.0.0
+	 * @apiSuccessExample {json} Success-Response:
+	 * {
+	 *     "InviteResponse": {
+	 *         "code": 200,	//除了200均为错误，405需要重新登录
+	 *         "message": "发布成功",	///返回的信息
+	 *         "status": 1	//状态为1为成功，0为失败
+	 *     }
+	 * }
+	 * */
 	public void saveTravel() {
 		try {
 			boolean save = false;
@@ -208,7 +340,7 @@ public class InviteController extends Controller{
 			responseValues.put("code", 200);
 			setAttr("InviteResponse", responseValues);
 			renderMultiJson("InviteResponse");
-			render("/app/InviteController/list");
+			//render("/app/InviteController/list");
 		} catch (Exception e) {
 			AppLog.error(e, getRequest());
 		} finally {
@@ -216,7 +348,31 @@ public class InviteController extends Controller{
 		}
 	}
 	
-
+	/**
+	 * @api {post} /app/InviteController/saveFood 添加美食邀约
+	 * @apiGroup InviteController
+	 * @apiDescription 用户添加美食邀约
+	 * @apiParam {String} token  用户的Token.
+	 * @apiParam {String} explain_url  邀约说明图片
+	 * @apiParam {int} cost_id  邀约费用id：1-我买单，2-AA制
+	 * @apiParam {int} invite_sex 邀约对象性别：0-男，1-女，2-不限
+	 * @apiParam {String} invite_province 邀约省
+	 * @apiParam {String} invite_city 邀约市
+	 * @apiParam {String} invite_place 邀约地点
+	 * @apiParam {String} invite_content  邀约食物
+	 * @apiParam {String} invite_explain  邀约说明
+	 * @apiParam {int} invite_receive  是否由我接送 0-是 1-不是
+	 * @apiParam {int} time_id  邀约时间：1-不限时间，2-任何休息日，3-不常周末，4-双方商议具体时间
+	 * @apiVersion 1.0.0
+	 * @apiSuccessExample {json} Success-Response:
+	 * {
+	 *     "InviteResponse": {
+	 *         "code": 200,	//除了200均为错误，405需要重新登录
+	 *         "message": "发布成功",	///返回的信息
+	 *         "status": 1	//状态为1为成功，0为失败
+	 *     }
+	 * }
+	 * */
 	public void saveFood() {
 		try {
 			boolean save = false;
@@ -267,7 +423,7 @@ public class InviteController extends Controller{
 			responseValues.put("code", 200);
 			setAttr("InviteResponse", responseValues);
 			renderMultiJson("InviteResponse");
-			render("/app/InviteController/list");
+			//render("/app/InviteController/list");
 		} catch (Exception e) {
 			AppLog.error(e, getRequest());
 		} finally {
@@ -275,7 +431,30 @@ public class InviteController extends Controller{
 		}
 	}
 	
-
+	/**
+	 * @api {post} /app/InviteController/saveSing 添加唱歌邀约
+	 * @apiGroup InviteController
+	 * @apiDescription 用户添加唱歌邀约
+	 * @apiParam {String} token  用户的Token.
+	 * @apiParam {String} explain_url  邀约说明图片
+	 * @apiParam {int} cost_id  邀约费用id：1-我买单，2-AA制
+	 * @apiParam {int} invite_sex 邀约对象性别：0-男，1-女，2-不限
+	 * @apiParam {String} invite_province 邀约省
+	 * @apiParam {String} invite_city 邀约市
+	 * @apiParam {String} invite_place 邀约地点
+	 * @apiParam {String} invite_explain  邀约说明
+	 * @apiParam {int} invite_receive  是否由我接送 0-是 1-不是
+	 * @apiParam {int} time_id  邀约时间：1-不限时间，2-任何休息日，3-不常周末，4-双方商议具体时间
+	 * @apiVersion 1.0.0
+	 * @apiSuccessExample {json} Success-Response:
+	 * {
+	 *     "InviteResponse": {
+	 *         "code": 200,	//除了200均为错误，405需要重新登录
+	 *         "message": "发布成功",	///返回的信息
+	 *         "status": 1	//状态为1为成功，0为失败
+	 *     }
+	 * }
+	 * */
 	public void saveSing() {
 		try {
 			boolean save = false;
@@ -324,7 +503,7 @@ public class InviteController extends Controller{
 			responseValues.put("code", 200);
 			setAttr("InviteResponse", responseValues);
 			renderMultiJson("InviteResponse");
-			render("/app/InviteController/list");
+			//render("/app/InviteController/list");
 		} catch (Exception e) {
 			AppLog.error(e, getRequest());
 		} finally {
@@ -332,8 +511,46 @@ public class InviteController extends Controller{
 		}
 	}
 	
-	
-	public void findTime() {
+	/**
+	 * @api {post} /app/InviteController/findData 加载选项数据
+	 * @apiGroup InviteController
+	 * @apiDescription 添加邀约时需要的选项数据
+	 * @apiParam {String} token  用户的Token.
+	 * @apiParam {String} invite_type_id  邀约的类型id：1-旅游，2-美食，3-唱歌，4-电影，5-运动，6-文艺
+	 * @apiVersion 1.0.0
+	 * @apiSuccessExample {json} Success-Response:
+	 * {
+    "InviteResponse": {
+        "code": 200,
+        "List": {
+            "daysList": [	//旅行天数
+                {
+                    "travel_days_id": 1,
+                    "travel_days_name": "当天往返"
+                },...
+            ],
+            "timeList": [	//邀约时间
+                {
+                    "time_name": "双方商议具体时间"
+                },...
+            ],
+            "costList": [	//付款方式
+                {
+                    "cost_id": 1,
+                    "cost_name": "我买单"
+                },...
+            ],
+            "modeList": [	//旅游出行方式
+                {
+                    "travel_mode_name": "往返坐飞机",
+                    "travel_mode_id": 1
+                },...
+            ]
+        }
+    }
+}
+	 * */
+	public void findData() {
 		try {
 			int type = getParaToInt("invite_type_id");
 			String token = getPara("token");
@@ -351,12 +568,12 @@ public class InviteController extends Controller{
 				return;
 			}
 			if(type!=1) {
-				inviteTimeList = inviteTime.dao.find("select time_name from invite_time limit 0,4");
+				inviteTimeList = inviteTime.dao.find("select * from invite_time limit 0,4");
 				map.put("timeList", inviteTimeList);
 			} else {
-				List<InviteCost> costList = InviteCost.dao.find("select cost_name from invite_cost"); 
-				List<TravelDays> daysList = TravelDays.dao.find("select travel_days_name from travel_days"); 
-				List<TravelMode> modeList = TravelMode.dao.find("select travel_mode_name from travel_mode"); 
+				List<InviteCost> costList = InviteCost.dao.find("select * from invite_cost"); 
+				List<TravelDays> daysList = TravelDays.dao.find("select * from travel_days"); 
+				List<TravelMode> modeList = TravelMode.dao.find("select * from travel_mode"); 
 				inviteTimeList = inviteTime.find("select time_name from invite_time limit 3,4");
 				map.put("costList", costList);
 				map.put("daysList", daysList);
@@ -375,7 +592,31 @@ public class InviteController extends Controller{
 		}
 	}
 	
-	
+	/**
+	 * @api {post} /app/InviteController/saveMovie 添加电影邀约
+	 * @apiGroup InviteController
+	 * @apiDescription 用户添加电影邀约
+	 * @apiParam {String} token  用户的Token.
+	 * @apiParam {String} explain_url  邀约说明图片
+	 * @apiParam {int} cost_id  邀约费用id：1-我买单，2-AA制
+	 * @apiParam {int} invite_sex 邀约对象性别：0-男，1-女，2-不限
+	 * @apiParam {String} invite_province 邀约省
+	 * @apiParam {String} invite_city 邀约市
+	 * @apiParam {String} invite_place 邀约地点
+	 * @apiParam {String} invite_content  邀约电影
+	 * @apiParam {String} invite_explain  邀约说明
+	 * @apiParam {int} invite_receive  是否由我接送 0-是 1-不是
+	 * @apiParam {int} time_id  邀约时间：1-不限时间，2-任何休息日，3-不常周末，4-双方商议具体时间
+	 * @apiVersion 1.0.0
+	 * @apiSuccessExample {json} Success-Response:
+	 * {
+	 *     "InviteResponse": {
+	 *         "code": 200,	//除了200均为错误，405需要重新登录
+	 *         "message": "发布成功",	///返回的信息
+	 *         "status": 1	//状态为1为成功，0为失败
+	 *     }
+	 * }
+	 * */
 	public void saveMovie() {
 		try {
 			boolean save = false;
@@ -426,7 +667,7 @@ public class InviteController extends Controller{
 			responseValues.put("code", 200);
 			setAttr("InviteResponse", responseValues);
 			renderMultiJson("InviteResponse");
-			render("/app/InviteController/list");
+			//render("/app/InviteController/list");
 		} catch (Exception e) {
 			AppLog.error(e, getRequest());
 		} finally {
@@ -434,7 +675,32 @@ public class InviteController extends Controller{
 		}
 	}
 	
-
+	/**
+	 * @api {post} /app/InviteController/saveMotion 添加运动邀约
+	 * @apiGroup InviteController
+	 * @apiDescription 用户添加运动邀约
+	 * @apiParam {String} token  用户的Token.
+	 * @apiParam {String} explain_url  邀约说明图片
+	 * @apiParam {int} cost_id  邀约费用id：1-我买单，2-AA制
+	 * @apiParam {int} invite_sex 邀约对象性别：0-男，1-女，2-不限
+	 * @apiParam {String} invite_province 邀约省
+	 * @apiParam {String} invite_city 邀约市
+	 * @apiParam {String} invite_place 邀约地点
+	 * @apiParam {String} invite_content  邀约运动
+	 * @apiParam {String} invite_explain  邀约说明
+	 * @apiParam {int} invite_receive  是否由我接送 0-是 1-不是
+	 * @apiParam {int} is_carry_bestie  是否可以携带闺蜜 0-是 1-否
+	 * @apiParam {int} time_id  邀约时间：1-不限时间，2-任何休息日，3-不常周末，4-双方商议具体时间
+	 * @apiVersion 1.0.0
+	 * @apiSuccessExample {json} Success-Response:
+	 * {
+	 *     "InviteResponse": {
+	 *         "code": 200,	//除了200均为错误，405需要重新登录
+	 *         "message": "发布成功",	///返回的信息
+	 *         "status": 1	//状态为1为成功，0为失败
+	 *     }
+	 * }
+	 * */
 	public void saveMotion() {
 		try {
 			boolean save = false;
@@ -488,7 +754,7 @@ public class InviteController extends Controller{
 			responseValues.put("code", 200);
 			setAttr("InviteResponse", responseValues);
 			renderMultiJson("InviteResponse");
-			render("/app/InviteController/list");
+			//render("/app/InviteController/list");
 		} catch (Exception e) {
 			AppLog.error(e, getRequest());
 		} finally {
@@ -496,7 +762,32 @@ public class InviteController extends Controller{
 		}
 	}
 	
-
+	/**
+	 * @api {post} /app/InviteController/saveLiterature 添加文艺邀约
+	 * @apiGroup InviteController
+	 * @apiDescription 用户添加文艺邀约
+	 * @apiParam {String} token  用户的Token.
+	 * @apiParam {String} explain_url  邀约说明图片
+	 * @apiParam {int} cost_id  邀约费用id：1-我买单，2-AA制
+	 * @apiParam {int} invite_sex 邀约对象性别：0-男，1-女，2-不限
+	 * @apiParam {String} invite_province 邀约省
+	 * @apiParam {String} invite_city 邀约市
+	 * @apiParam {String} invite_place 邀约地点
+	 * @apiParam {String} invite_content  邀约文艺
+	 * @apiParam {String} invite_explain  邀约说明
+	 * @apiParam {int} invite_receive  是否由我接送 0-是 1-不是
+	 * @apiParam {int} is_carry_bestie  是否可以携带闺蜜 0-是 1-否
+	 * @apiParam {int} time_id  邀约时间：1-不限时间，2-任何休息日，3-不常周末，4-双方商议具体时间
+	 * @apiVersion 1.0.0
+	 * @apiSuccessExample {json} Success-Response:
+	 * {
+	 *     "InviteResponse": {
+	 *         "code": 200,	//除了200均为错误，405需要重新登录
+	 *         "message": "发布成功",	///返回的信息
+	 *         "status": 1	//状态为1为成功，0为失败
+	 *     }
+	 * }
+	 * */
 	public void saveLiterature() {
 		try {
 			boolean save = false;
@@ -547,14 +838,66 @@ public class InviteController extends Controller{
 			responseValues.put("code", 200);
 			setAttr("InviteResponse", responseValues);
 			renderMultiJson("InviteResponse");
-			render("/app/InviteController/list");
+			//render("/app/InviteController/list");
 		} catch (Exception e) {
 			AppLog.error(e, getRequest());
 		} finally {
 			AppLog.info("", getRequest());
 		}
 	}
+	
+	
 	//邀约详情
+	/**
+	 * @api {get} /app/InviteController/details 邀约详情
+	 * @apiGroup InviteController
+	 * @apiDescription 邀约详情接口
+	 * @apiParam {String} token  用户的Token.
+	 * @apiParam {int} invite_id  邀约id.
+	 * @apiVersion 1.0.0
+	 * 
+	 * @apiSuccessExample {json} Success-Response:
+	 * {
+    "InviteResponse": {
+        "code": 200,	//除了200均为错误，405需要重新登录
+        "detailsResult": {
+            "detailsList": [
+                {
+                    "invite_content": "唱跳rap篮球",	//邀约内容
+                    "type_name": "电影",	//类型名称
+                    "invite_explain": "i want to play basketball",	//邀约说明
+                    "distance": 2315181,	//距离
+                    "travel_mode_name": "自驾",	//出行方式
+                    "hot": 26,	//热度
+                    "travel_mode_id": 3,	//出行方式id
+                    "travel_days_id": 4,	//类型id
+                    "time_name": "任何休息日",	//邀约时间
+                    "invite_province": "云南",	//邀约省份
+                    "travel_days_name": "预计3~5天",	//出行时间
+                    "nickname": "xiaoguan",	//用户昵称
+                    "cost_name": "我买单",	//费用类型
+                    "explain_url": "1560222965884.jpg",	//说明图片
+                    "invite_sex": 0,	//邀约性别 0-男 1-女 2-不限
+                    "invite_receive": 1,	//是否由我接送 0-是 1-不是
+                    "invite_id": 1,	
+                    "time_id": 2,	//邀约时间id
+                    "image_01": "1456109546949.jpg",	//用户头像
+                    "is_top": 1,	//是否置顶
+                    "cost_id": 1,	//邀约费用id
+                    "invite_place": "滇池路",	//邀约地点（自填）
+                    "user_id": 33,	//用户id
+                    "invite_city": "昆明",	//邀约城市
+                    "invite_type_id": 4,	//邀约类型id
+                    "top_date": "2019-06-14 11:49:13",	//置顶时间
+                    "age": 36,	//用户年龄
+                    "is_equal_place": 0,	//有相同目的地的异性是否通知我 0-是 1-否
+                    "is_carry_bestie": 0	//是否可以携带闺蜜 0-是 1-否
+                }
+            ]
+        }
+    }
+}
+	 * */
 	public void details() {
 		String token;
 		ResponseValues response2;
@@ -580,11 +923,14 @@ public class InviteController extends Controller{
 //					+ "(SIN(("+longitude+"*PI()/180-longitude*PI()/180)/2),2)))*1000) AS distance"
 //					+ " from user where user_id = " + user_id);
 			final List<Invite> iList = Invite.dao.find("SELECT u.nickname,u.image_01,u.hot,"
-					+ "i.*,"
+					+ "i.*,ic.cost_name,it.time_name,tm.travel_mode_name,itpe.type_name,td.travel_days_name,"
 					+ "ROUND(6378.138*2*ASIN(SQRT(POW(SIN(("+latitude+"*PI()/180-u.latitude*PI()/180)/2),2)+COS("+latitude+"*PI()/180)*COS(u.latitude*PI()/180)*POW"
 					+ "(SIN(("+longitude+"*PI()/180-u.longitude*PI()/180)/2),2)))*1000) AS distance,DATE_FORMAT(FROM_DAYS(TO_DAYS(NOW())-TO_DAYS(birthday)), '%Y')+0 AS age"
-					+ " FROM `user` AS u INNER JOIN invite AS i ON u.`user_id` = i.`user_id` "+filter_sql+"i.invite_id="+invite_id+" ORDER BY i.`is_top` DESC");
-			System.out.println(user_id.toString());
+					+ " FROM `user` AS u INNER JOIN invite AS i ON u.`user_id` = i.`user_id` "
+					+ "LEFT JOIN invite_cost AS ic ON i.cost_id = ic.cost_id LEFT JOIN invite_type AS itpe ON i.invite_type_id = itpe.type_id "
+					+ "LEFT JOIN invite_time AS it ON i.time_id = it.time_id LEFT JOIN travel_mode AS tm ON i.travel_mode_id = tm.travel_mode_id "
+					+ "LEFT JOIN travel_days AS td ON i.travel_days_id = td.travel_days_id"
+					+filter_sql+"i.invite_id="+invite_id+" ORDER BY i.`is_top` DESC");
 			ResponseValues responseValues = new ResponseValues(this, Thread.currentThread().getStackTrace()[1].getMethodName());
 			responseValues.put("code", 200);
 			responseValues.put("Result", new HashMap<String, Object>() {
@@ -603,6 +949,22 @@ public class InviteController extends Controller{
 	}
 	
 	//购买置顶
+	/**
+	 * @api {post} /app/InviteController/payTop 购买邀约置顶
+	 * @apiGroup InviteController
+	 * @apiDescription 购买邀约置顶接口
+	 * @apiParam {String} token  用户的Token.
+	 * @apiVersion 1.0.0
+	 * 
+	 * @apiSuccessExample {json} Success-Response:
+	 * {
+	 *	"InviteResponse": {
+	 *		"code": 400,		//除了200均为错误，405需要重新登录
+	 *		"message": "置顶成功",	//返回的信息
+	 *		"status": 1		//状态为1为成功，0为失败
+	 *	}
+	 *}
+	 * */
 	@Before(Tx.class)
 	public void payTop(){
 		try {

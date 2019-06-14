@@ -49,7 +49,28 @@ import com.quark.utils.FileUtils;
  */
 public class ReviewController extends Controller implements Serializable{
 	
-	
+		/**
+		 * @api {post} /app/ReviewController/findCategroy 返回汽车品牌列表
+		 * @apiGroup ReviewController
+		 * @apiDescription 返回汽车品牌列表接口
+		 * @apiParam {String} token  用户的Token.
+		 * @apiVersion 1.0.0
+		 * 
+		 * @apiSuccessExample {json} Success-Response:
+		 * {
+		 *	"ReviewResponse": {
+		 *		"code": 400,			//除了200均为错误，405需要重新登录
+		 *		"list": [
+		 *			{
+		 *				"type_name": "奔驰",	//品牌名称
+		 *				"car_url": "1559275278062.jpg",	//分类图片
+		 *				"id": 1,
+		 *				"type": "high"	//品牌类型
+		 *			}
+		 *		]
+		 *	}
+		 *}
+		 * */
 		public void findCategroy(){
 			try {
 				String token = getPara("token");
@@ -77,7 +98,33 @@ public class ReviewController extends Controller implements Serializable{
 			}
 		}
 		
-
+		/**
+		 * @api {post} /app/ReviewController/findCarClassify 返回汽车详情列表
+		 * @apiGroup ReviewController
+		 * @apiDescription 返回汽车详情列表接口
+		 * @apiParam {String} token  用户的Token.
+		 * @apiParam {int} categroy_id 汽车分类id
+		 * @apiVersion 1.0.0
+		 * 
+		 * @apiSuccessExample {json} Success-Response:
+		 * {
+		 *	"ReviewResponse": {
+		 *		"code": 400,			//除了200均为错误，405需要重新登录
+		 *		"list": [
+		 *			{
+		 *				"car_name": "奔驰A级",	//汽车名称
+		 *				"car_url": "1559290520110.jpg",	//汽车图片
+		 *				"categroy_id": 1 	//分类id
+		 *			},
+		 *			{
+		 *				"car_name": "奔驰G级AMG",	//汽车名称
+		 *				"car_url": "1559290551038.jpg",	//汽车图片
+		 *				"categroy_id": 1	//分类id
+		 *			}
+		 *		]
+		 *	}
+		 *}
+		 * */
 		public void findCarClassify(){
 			try {
 				String token = getPara("token");
@@ -107,6 +154,24 @@ public class ReviewController extends Controller implements Serializable{
 			}
 		}
 	
+		/**
+		 * @api {post} /app/ReviewController/saveVideo 提交汽车认证审核申请
+		 * @apiGroup ReviewController
+		 * @apiDescription 汽车认证审核申请接口
+		 * @apiParam {String} token  用户的Token.
+		 * @apiParam {File} drivers 视频文件
+		 * @apiParam {Sting} car_name 汽车名称
+		 * @apiVersion 1.0.0
+		 * 
+		 * @apiSuccessExample {json} Success-Response:
+		 * {
+		 *	"ReviewResponse": {
+		 *		"code": 400,			//除了200均为错误，405需要重新登录
+		 *		"message": "未知错误",		//返回的信息
+		 *		"status": 0			//状态为1为成功，0为失败
+		 *	}
+		 *}
+		 * */
 		//汽车认证
 		public void saveCar() {
 			try {
@@ -131,10 +196,10 @@ public class ReviewController extends Controller implements Serializable{
 			//判断用户是否有审核申请记录
 			if(certification!=null) {
 				save = certification.set(certification.drivers, FileUtils.renameToFile(upload_cover))
-						.set(certification.car_status, 2)
+						.set(certification.car_status, 2).set(certification.car_name, car_name)
 						.set(certification.car_reason, "").update();
 			} else {
-				save = certification.set(certification.user_id, user_id)
+				save = certification.set(certification.user_id, user_id).set(certification.car_name, car_name)
 						.set(certification.drivers, FileUtils.renameToFile(upload_cover))
 						.save();
 			}
@@ -156,8 +221,6 @@ public class ReviewController extends Controller implements Serializable{
 			} finally {
 				AppData.analyze("ReviewController/saveCar", "汽车审核", this);
 			}
-			
-			
 		}
 		
 				
@@ -170,6 +233,23 @@ public class ReviewController extends Controller implements Serializable{
 		@ReturnOutlet(name = "ReviewResponse{user:token}", remarks = "token", dataType = DataType.String, defaultValue = "")
 		@ReturnOutlet(name = "ReviewResponse{status}", remarks = "1-申请成功，2-申请失败", dataType = DataType.Int, defaultValue = "")
 		@ReturnOutlet(name = "ReviewResponse{code}", remarks = "200-正常返回，405-重新登陆", dataType = DataType.Int, defaultValue = "")
+		/**
+		 * @api {post} /app/ReviewController/saveVideo 提交视频认证审核申请
+		 * @apiGroup ReviewController
+		 * @apiDescription 视频认证审核申请接口
+		 * @apiParam {String} token  用户的Token.
+		 * @apiParam {File} video_url 视频文件
+		 * @apiVersion 1.0.0
+		 * 
+		 * @apiSuccessExample {json} Success-Response:
+		 * {
+		 *	"ReviewResponse": {
+		 *		"code": 400,			//除了200均为错误，405需要重新登录
+		 *		"message": "未知错误",		//返回的信息
+		 *		"status": 0			//状态为1为成功，0为失败
+		 *	}
+		 *}
+		 * */
 		public void saveVideo() {
 				try {
 				String token = getPara("token");
@@ -230,6 +310,24 @@ public class ReviewController extends Controller implements Serializable{
 		@ReturnOutlet(name = "ReviewResponse{user:token}", remarks = "token", dataType = DataType.String, defaultValue = "")
 		@ReturnOutlet(name = "ReviewResponse{status}", remarks = "1-申请成功，2-申请失败", dataType = DataType.Int, defaultValue = "")
 		@ReturnOutlet(name = "ReviewResponse{code}", remarks = "200-正常返回，405-重新登陆", dataType = DataType.Int, defaultValue = "")
+		/**
+		 * @api {post} /app/ReviewController/saveIdCard 提交身份证审核申请
+		 * @apiGroup ReviewController
+		 * @apiDescription 身份证审核申请接口
+		 * @apiParam {String} token  用户的Token.
+		 * @apiParam {File} id_card_up 身份证正面
+		 * @apiParam {File} id_card_down 身份证反面
+		 * @apiVersion 1.0.0
+		 * 
+		 * @apiSuccessExample {json} Success-Response:
+		 * {
+		 *	"ReviewResponse": {
+		 *		"code": 400,			//除了200均为错误，405需要重新登录
+		 *		"message": "未知错误",		//返回的信息
+		 *		"status": 0			//状态为1为成功，0为失败
+		 *	}
+		 *}
+		 * */
 		public void saveIdCard() {
 			try {
 				String token = getPara("token");
@@ -289,6 +387,24 @@ public class ReviewController extends Controller implements Serializable{
 		@ReturnOutlet(name = "ReviewResponse{user:token}", remarks = "token", dataType = DataType.String, defaultValue = "")
 		@ReturnOutlet(name = "ReviewResponse{status}", remarks = "1-申请成功，2-申请失败", dataType = DataType.Int, defaultValue = "")
 		@ReturnOutlet(name = "ReviewResponse{code}", remarks = "200-正常返回，405-重新登陆", dataType = DataType.Int, defaultValue = "")
+		/**
+		 * @api {post} /app/ReviewController/saveHouse 提交房产申请
+		 * @apiDescription 房产审核申请接口
+		 * @apiGroup ReviewController
+		 * @apiParam {String} token  用户的Token.
+		 * @apiParam {File} house_url 用户上传的房产证照片
+		 * @apiParam {File} house_city 用户的城市
+		 * @apiVersion 1.0.0
+		 * 
+		 * @apiSuccessExample {json} Success-Response:
+		 * {
+		 *	"ReviewResponse": {
+		 *		"code": 400,			//除了200均为错误，405需要重新登录
+		 *		"message": "未知错误",		//返回的信息
+		 *		"status": 0			//状态为1为成功，0为失败
+		 *	}
+		 *}
+		 * */
 		public void saveHouse() {
 			String token;
 			ResponseValues response2;
@@ -308,13 +424,13 @@ public class ReviewController extends Controller implements Serializable{
 				//判断用户是否有审核申请记录
 				UploadFile HouseImg_Url = getFile("house_url",config.images_path);
 				String user_id = AppToken.getUserId(token, this);
-				Audit Audit = new Audit();
-				Audit.dao.find("select * from certification where user_id =" + user_id);
-				if(Audit != null) {
-					save  = Audit.set("house_url", FileUtils.renameToFile(HouseImg_Url))
+				String house_city = getPara("house_city");
+				Audit audit = Audit.dao.findFirst("select * from certification where user_id =" + user_id);
+				if(audit != null) {
+					save  = audit.set("house_url", FileUtils.renameToFile(HouseImg_Url)).set("house_city", house_city)
 							.set("house_reason", "").set("house_status",2).update();
 				}else {
-					save  = Audit.set("house_url", FileUtils.renameToFile(HouseImg_Url))
+					save  = audit.set("house_url", FileUtils.renameToFile(HouseImg_Url)).set("house_city", house_city)
 							.set("user_id",user_id).save();
 				}
 				ResponseValues responseValues = new ResponseValues(this, Thread.currentThread().getStackTrace()[1].getMethodName());
@@ -347,11 +463,21 @@ public class ReviewController extends Controller implements Serializable{
 		@ReturnOutlet(name = "ReviewResponse{status}", remarks = "1-申请成功，2-申请失败", dataType = DataType.Int, defaultValue = "")
 		@ReturnOutlet(name = "ReviewResponse{code}", remarks = "200-正常返回，405-重新登陆", dataType = DataType.Int, defaultValue = "")
 		/**
-		 * @api {get} /app/saveEdu
-		 * @apiDescription 个性签名的修改审核提交与阿里云识别
+		 * @api {post} /app/ReviewController/saveEdu 提交学历认证审核申请
+		 * @apiDescription 学历审核申请接口
+		 * @apiGroup ReviewController
 		 * @apiParam {String} token  用户的Token.
-		 * @apiParam {String} content 用户更改的个性签名.
-		 * @apiSuccess {String} lastname  Lastname of the User.
+		 * @apiParam {File} edu_url 用户上传的学历照片
+		 * @apiVersion 1.0.0
+		 * 
+		 * @apiSuccessExample {json} Success-Response:
+		 * {
+		 *	"ReviewResponse": {
+		 *		"code": 400,			//除了200均为错误，405需要重新登录
+		 *		"message": "未知错误",		//返回的信息
+		 *		"status": 0			//状态为1为成功，0为失败
+		 *	}
+		 *}
 		 * */
 		public void saveEdu() {
 			String token;
@@ -371,13 +497,12 @@ public class ReviewController extends Controller implements Serializable{
 				}
 				UploadFile EduImg_Url = getFile("edu_url",config.images_path);
 				String user_id = AppToken.getUserId(token, this);
-				Audit Audit = new Audit();
-				Audit.dao.find("select * from certification where user_id =" + user_id);
-				if(Audit != null) {
-					save  = Audit.set("edu_url", FileUtils.renameToFile(EduImg_Url))
+				Audit audit = Audit.dao.findFirst("select * from certification where user_id =" + user_id);
+				if(audit != null) {
+					save  = audit.set("edu_url", FileUtils.renameToFile(EduImg_Url))
 							.set("edu_reason", "").set("edu_status",2).update();
 				}else {
-					save  = Audit.set("edu_url", FileUtils.renameToFile(EduImg_Url)).set("edu_reason", "")
+					save  = audit.set("edu_url", FileUtils.renameToFile(EduImg_Url)).set("edu_reason", "")
 							.set("user_id",user_id).set("edu_status",2).save();
 				}
 				ResponseValues responseValues = new ResponseValues(this, Thread.currentThread().getStackTrace()[1].getMethodName());
@@ -395,31 +520,34 @@ public class ReviewController extends Controller implements Serializable{
 			}
 			 catch (Exception e) {
 				AppLog.error(e, getRequest());
+				
 			}finally{
 				AppLog.info("", getRequest());
 			}
 		}
 		
 		
-		private String accessKey = "LTAIj2tGt2YF8jv1";
-		private String accessKeySecret = "z9kgH4skJBCRkXHOYOM37i5zYK4hQ4";
+		
 		//个性签名认证
 		/**
-		 * @api {get} http://localhost:8080/app/ReviewController/saveHeart
-		 * @apiDescription 个性签名的修改审核提交与阿里云识别
+		 * @api {get} /app/ReviewController/saveHeart 提交个性签名审核申请
+		 * @apiDescription 个性签名审核申请
+		 * @apiGroup ReviewController
 		 * @apiParam {String} token  用户的Token.
 		 * @apiParam {String} content 用户更改的个性签名.
+		 * @apiVersion 1.0.0
 		 * 
 		 * @apiSuccessExample {json} Success-Response:
-		 *
 		 * {
 		 *	"ReviewResponse": {
-		 *		"code": 400,			//除了200均为错误
-		 *		"message": "未知错误",	//返回的信息
-		 *		"status": 0				//状态为1为成功，0为失败
-		 *		}
+		 *		"code": 400,			//除了200均为错误，405需要重新登录
+		 *		"message": "未知错误",		//返回的信息
+		 *		"status": 0			//状态为1为成功，0为失败
+		 *	}
 		 *}
 		 * */
+		private String accessKey = "LTAIj2tGt2YF8jv1";
+		private String accessKeySecret = "z9kgH4skJBCRkXHOYOM37i5zYK4hQ4";
 		public void saveHeart() {
 			String token;
 			ResponseValues response2;

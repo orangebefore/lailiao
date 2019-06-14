@@ -262,29 +262,7 @@ public class UserCenter extends Controller implements Serializable {
 		}
 	}
 
-	@Author("cluo")
-	@Rp("注册")
-	@URLParam(defaultValue = "", explain = Value.Infer, type = Type.String, name = User.telephone)
-	@URLParam(defaultValue = "", explain = Value.Infer, type = Type.File, name = "cover")
-	@Explaination(info = "创建【注册由APP校验短信验证码是否正确】")
-	public void test() {
-		try {
-			final UploadFile cover = getFile("cover", config.save_path);
-			String telephone = getPara("telephone");
-			ResponseValues responseValues = new ResponseValues(this,
-					Thread.currentThread().getStackTrace()[1].getMethodName());
-			responseValues.put("message", "恭喜您，上传成功！");
-			responseValues.put("code", 200);
-			setAttr("RegistTelResponse", responseValues);
-			renderMultiJson("RegistTelResponse");
-			System.out.println("ok");
-		} catch (Exception e) {
-			e.printStackTrace();
-			AppLog.error(e, getRequest());
-		} finally {
-		}
-	}
-
+	
 	@Author("cluo")
 	@Rp("注册")
 	@Explaination(info = "创建【注册由APP校验短信验证码是否正确】")
